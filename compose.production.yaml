@@ -1,0 +1,48 @@
+services:
+  caddy:
+    image: caddy:2.10.2-alpine
+    restart: unless-stopped
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:?set APP_DOMAIN in .env.production}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - application_outputs:/srv/application-outputs:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      career-web:
+        condition: service_healthy
+    networks: [career-private]
+
+  pipeline-scheduler:
+    image: zhitan-career-api:local
+    restart: unless-stopped
+    env_file: ${ZHITAN_ENV_FILE:-.env.production}
+    environment:
+      APP_RUN_MODE: scheduler
+      CAREER_DATABASE_URL: postgresql+psycopg://${CAREER_POSTGRES_USER}:${CAREER_POSTGRES_PASSWORD}@career-postgres:5432/${CAREER_POSTGRES_DB}
+      CAREER_APPLICATION_DATA_DIR: /app/data
+      CAREER_CREDENTIAL_KEY_FILE: /var/lib/zhitan-credentials/career_credential_master.key
+      PLATFORM_AUTH_REQUIRED: "true"
+      VIDEO_SUBMIT_ENABLED: ${VIDEO_SUBMIT_ENABLED:-false}
+      AUDIO_ENABLED: ${AUDIO_ENABLED:-false}
+    command: ["python", "main.py"]
+    volumes:
+      - application_data:/app/data
+      - application_outputs:/app/outputs
+      - application_logs:/app/logs
+      - application_skills:/app/.agents
+      - credential_keys:/var/lib/zhitan-credentials
+    depends_on:
+      career-migrate:
+        condition: service_completed_successfully
+    networks: [career-private]
+    init: true
+
+volumes:
+  caddy_data: {}
+  caddy_config: {}

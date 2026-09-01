@@ -1,29 +1,23 @@
+# Compatibility entrypoint for the former standalone document services.
+# New deployments should merge compose.yaml and compose.document.yaml.
 services:
   career-docling-serve:
-    # 本机 RTX 5070 已通过 Docker + PyTorch 的 CUDA 实测；默认使用官方 CUDA 12.8 镜像。
-    # 解析客户端会绕过系统 HTTP 代理直连本机服务，避免把 127.0.0.1 误转发为 502。
     image: ghcr.io/docling-project/docling-serve-cu128:v1.21.0
-    container_name: wechat-agent-career-docling
     restart: unless-stopped
     ports:
-      # 仅暴露到本机，避免简历内容经公网直接访问解析服务。
       - "127.0.0.1:${DOCLING_SERVE_PORT:-5001}:5001"
     environment:
-      # 有明确的 Docker/GPU 故障时可在 .env.career-assistant 临时设为 cpu；
-      # 不改变上传、OCR、Markdown 或模型分析链路。
-      DOCLING_DEVICE: "${DOCLING_DEVICE:-cuda}"
+      DOCLING_DEVICE: ${DOCLING_DEVICE:-cuda}
       DOCLING_SERVE_ENG_KIND: local
-      DOCLING_SERVE_ENG_LOC_NUM_WORKERS: "${DOCLING_SERVE_WORKERS:-1}"
-      DOCLING_SERVE_MAX_NUM_PAGES: "${DOCLING_SERVE_MAX_NUM_PAGES:-90}"
-      DOCLING_SERVE_MAX_FILE_SIZE: "${DOCLING_SERVE_MAX_FILE_SIZE:-10485760}"
+      DOCLING_SERVE_ENG_LOC_NUM_WORKERS: ${DOCLING_SERVE_WORKERS:-1}
+      DOCLING_SERVE_MAX_NUM_PAGES: ${DOCLING_SERVE_MAX_NUM_PAGES:-90}
+      DOCLING_SERVE_MAX_FILE_SIZE: ${DOCLING_SERVE_MAX_FILE_SIZE:-10485760}
       NVIDIA_VISIBLE_DEVICES: all
       NVIDIA_DRIVER_CAPABILITIES: compute,utility
     gpus: all
 
   career-gotenberg:
-    # 成熟的 LibreOffice 转换服务，仅将旧版 DOC/XLS 先转为 PDF 后再交给 Docling。
     image: gotenberg/gotenberg:8.34.0
-    container_name: wechat-agent-career-gotenberg
     restart: unless-stopped
     ports:
       - "127.0.0.1:${GOTENBERG_PORT:-3000}:3000"

@@ -1,0 +1,43 @@
+services:
+  career-gotenberg:
+    image: gotenberg/gotenberg:8.34.0
+    restart: unless-stopped
+    environment:
+      LIBREOFFICE_AUTO_START: "true"
+    networks: [career-private]
+
+  career-docling:
+    image: ghcr.io/docling-project/docling-serve-cpu:v1.21.0
+    restart: unless-stopped
+    environment:
+      DOCLING_DEVICE: ${DOCLING_DEVICE:-cpu}
+      DOCLING_NUM_THREADS: ${DOCLING_CPU_THREADS:-1}
+      DOCLING_SERVE_ENG_KIND: local
+      DOCLING_SERVE_ENG_LOC_NUM_WORKERS: ${DOCLING_SERVE_WORKERS:-1}
+      DOCLING_SERVE_MAX_NUM_PAGES: ${DOCLING_SERVE_MAX_NUM_PAGES:-90}
+      DOCLING_SERVE_MAX_FILE_SIZE: ${DOCLING_SERVE_MAX_FILE_SIZE:-10485760}
+    networks: [career-private]
+
+  career-api:
+    environment:
+      CAREER_DOCLING_ENABLED: "true"
+      CAREER_DOCLING_SERVICE_BASE_URL: http://career-docling:5001
+      CAREER_GOTENBERG_ENABLED: "true"
+      CAREER_GOTENBERG_SERVICE_BASE_URL: http://career-gotenberg:3000
+    depends_on:
+      career-docling:
+        condition: service_started
+      career-gotenberg:
+        condition: service_started
+
+  career-agent-worker:
+    environment:
+      CAREER_DOCLING_ENABLED: "true"
+      CAREER_DOCLING_SERVICE_BASE_URL: http://career-docling:5001
+      CAREER_GOTENBERG_ENABLED: "true"
+      CAREER_GOTENBERG_SERVICE_BASE_URL: http://career-gotenberg:3000
+    depends_on:
+      career-docling:
+        condition: service_started
+      career-gotenberg:
+        condition: service_started

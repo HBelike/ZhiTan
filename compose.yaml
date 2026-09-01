@@ -1,0 +1,146 @@
+x-default-logging: &default-logging
+  driver: local
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-career-environment: &career-environment
+  CAREER_DATABASE_URL: postgresql+psycopg://${CAREER_POSTGRES_USER:-zhitan}:${CAREER_POSTGRES_PASSWORD:?set CAREER_POSTGRES_PASSWORD}@career-postgres:5432/${CAREER_POSTGRES_DB:-zhitan}
+  CAREER_APPLICATION_DATA_DIR: /app/data
+  CAREER_CREDENTIAL_KEY_FILE: /var/lib/zhitan-credentials/career_credential_master.key
+  PLATFORM_AUTH_REQUIRED: "true"
+  PLATFORM_PUBLIC_REGISTRATION_ENABLED: "false"
+  PLATFORM_CLI_BOOTSTRAP_ONLY: "true"
+  CAREER_DOCLING_ENABLED: "false"
+  CAREER_GOTENBERG_ENABLED: "false"
+  VIDEO_SUBMIT_ENABLED: "false"
+  AUDIO_ENABLED: "false"
+
+services:
+  career-postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${CAREER_POSTGRES_DB:-zhitan}
+      POSTGRES_USER: ${CAREER_POSTGRES_USER:-zhitan}
+      POSTGRES_PASSWORD: ${CAREER_POSTGRES_PASSWORD:?set CAREER_POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    networks: [career-private]
+    logging: *default-logging
+
+  career-migrate:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    image: zhitan-career-api:local
+    env_file: ${ZHITAN_ENV_FILE:-.env.quickstart}
+    environment: *career-environment
+    command: ["alembic", "upgrade", "head"]
+    restart: "no"
+    depends_on:
+      career-postgres:
+        condition: service_healthy
+    networks: [career-private]
+    logging: *default-logging
+
+  career-api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    image: zhitan-career-api:local
+    restart: unless-stopped
+    env_file: ${ZHITAN_ENV_FILE:-.env.quickstart}
+    environment: *career-environment
+    expose:
+      - "8012"
+    tmpfs:
+      - /var/lib/career-temporary-attachments:size=128m,mode=1770,uid=100,gid=101
+    volumes:
+      - application_data:/app/data
+      - application_outputs:/app/outputs
+      - application_logs:/app/logs
+      - application_skills:/app/.agents
+      - credential_keys:/var/lib/zhitan-credentials
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; assert urlopen('http://127.0.0.1:8012/api/ready', timeout=5).status == 200"]
+      interval: 10s
+      timeout: 6s
+      retries: 18
+      start_period: 20s
+    depends_on:
+      career-migrate:
+        condition: service_completed_successfully
+    networks: [career-private]
+    init: true
+    logging: *default-logging
+
+  career-agent-worker:
+    image: zhitan-career-api:local
+    restart: unless-stopped
+    env_file: ${ZHITAN_ENV_FILE:-.env.quickstart}
+    environment:
+      <<: *career-environment
+      CAREER_AGENT_WORKER_ID: ${CAREER_AGENT_WORKER_ID:-career-agent-worker}
+      CAREER_AGENT_GLOBAL_CONCURRENCY: ${CAREER_AGENT_GLOBAL_CONCURRENCY:-8}
+      CAREER_AGENT_WORKER_CONCURRENCY: ${CAREER_AGENT_WORKER_CONCURRENCY:-4}
+      CAREER_AGENT_LEASE_SECONDS: ${CAREER_AGENT_LEASE_SECONDS:-90}
+      CAREER_AGENT_HEARTBEAT_SECONDS: ${CAREER_AGENT_HEARTBEAT_SECONDS:-20}
+      CAREER_AGENT_EVENT_POLL_MILLISECONDS: ${CAREER_AGENT_EVENT_POLL_MILLISECONDS:-300}
+    command: ["python", "scripts/run_career_agent_worker.py"]
+    volumes:
+      - application_data:/app/data
+      - application_outputs:/app/outputs
+      - application_logs:/app/logs
+      - application_skills:/app/.agents
+      - credential_keys:/var/lib/zhitan-credentials
+    healthcheck:
+      test: ["CMD", "python", "scripts/check_career_worker_health.py"]
+      interval: 10s
+      timeout: 6s
+      retries: 12
+      start_period: 20s
+    depends_on:
+      career-migrate:
+        condition: service_completed_successfully
+    networks: [career-private]
+    init: true
+    logging: *default-logging
+
+  career-web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.web
+    image: zhitan-career-web:local
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${ZHITAN_HTTP_PORT:-18081}:80"
+    depends_on:
+      career-api:
+        condition: service_healthy
+    networks: [career-private]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/api/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    logging: *default-logging
+
+networks:
+  career-private:
+    driver: bridge
+
+volumes:
+  postgres_data: {}
+  application_data: {}
+  application_outputs: {}
+  application_logs: {}
+  application_skills: {}
+  credential_keys: {}

@@ -19,8 +19,8 @@ COPY . ./
 # 到命名卷 /app/.agents/skills，避免开发机 ~/.codex/.agents 成为生产依赖。
 RUN addgroup --system career \
     && adduser --system --ingroup career --home /nonexistent career \
-    && mkdir -p /var/lib/career-temporary-attachments /app/data /app/outputs /app/logs /app/.agents/skills /app/deploy/skill-seeds \
-    && chown -R career:career /app /var/lib/career-temporary-attachments
+    && mkdir -p /var/lib/career-temporary-attachments /var/lib/zhitan-credentials /app/data /app/outputs /app/logs /app/.agents/skills /app/deploy/skill-seeds \
+    && chown -R career:career /app /var/lib/career-temporary-attachments /var/lib/zhitan-credentials
 
 USER career
 EXPOSE 8012
