@@ -46,7 +46,7 @@ def build_user(role: PlatformRole) -> PlatformUser:
 class NavigationConfigTests(unittest.TestCase):
     def test_role_model_only_contains_user_and_admin(self) -> None:
         self.assertEqual({role.value for role in PlatformRole}, {"user", "admin"})
-        self.assertEqual(PLATFORM_ADMIN_EMAIL, "2963613812@qq.com")
+        self.assertEqual(PLATFORM_ADMIN_EMAIL, "admin@example.com")
 
     def test_default_catalog_contains_job_library_as_top_level_module(self) -> None:
         modules = route_modules_for_ui(None, PlatformRole.ADMIN)
