@@ -35,7 +35,7 @@
 - Consumes: `normalizeAppRoute(pathname, reviewRoutes) -> string` and `route_modules_for_ui(value, role) -> list[dict]`.
 - Produces: legacy `/resume-assistant` and `/evaluations` URLs normalize to `/career`; the public route catalog has seven top-level routes and two feature switches.
 
-- [ ] **Step 1: Add failing route-removal tests**
+- [x] **Step 1: Add failing route-removal tests**
 
 ```javascript
 test('已卸载页面地址统一回到求职助手', () => {
@@ -58,7 +58,7 @@ def test_retired_routes_are_not_returned_but_legacy_settings_are_accepted(self) 
     self.assertEqual(len([item for item in modules if item["scope"] == "route"]), 7)
 ```
 
-- [ ] **Step 2: Run the focused tests and confirm failure**
+- [x] **Step 2: Run the focused tests and confirm failure**
 
 ```powershell
 python -m pytest tests/test_navigation_config.py -q
@@ -68,7 +68,7 @@ node --test src/navigation-access.test.js
 
 Expected: assertions fail because both routes and catalog entries still exist.
 
-- [ ] **Step 3: Remove only route and navigation mounting**
+- [x] **Step 3: Remove only route and navigation mounting**
 
 In `App.vue`, remove both page imports, the two `appNavItems`, metadata branches, route CSS flags, and template branches. Do not delete either component file.
 
@@ -90,11 +90,11 @@ for key, enabled in source.items():
         continue
 ```
 
-- [ ] **Step 4: Run route tests and confirm pass**
+- [x] **Step 4: Run route tests and confirm pass**
 
 Run the two commands from Step 2. Expected: both focused suites pass; route mounting is absent while both component files still exist.
 
-- [ ] **Step 5: Commit the route change**
+- [x] **Step 5: Commit the route change**
 
 ```powershell
 git add web-ui/src/App.vue web-ui/src/navigation-access.js web-ui/src/navigation-access.test.js src/platform_access/navigation_config.py tests/test_navigation_config.py
@@ -122,7 +122,7 @@ git commit -m "refactor: unmount retired product routes"
 - Produces: `load_platform_admin_email(environ: Mapping[str, str] | None = None) -> str` and the existing `PLATFORM_ADMIN_EMAIL: str`, now environment-backed.
 - Consumes: existing bootstrap/service/repository imports of `PLATFORM_ADMIN_EMAIL`; no call-site signature changes.
 
-- [ ] **Step 1: Add failing configuration and migration tests**
+- [x] **Step 1: Add failing configuration and migration tests**
 
 ```python
 def test_platform_admin_email_comes_from_environment() -> None:
@@ -136,7 +136,7 @@ def test_platform_admin_email_rejects_invalid_value() -> None:
 
 Update migration tests to assert that migration 20 contains `uq_platform_users_single_admin` but not `platform_users_admin_email_check`, and migration 29 selects one active `role = 'admin'` without an email literal.
 
-- [ ] **Step 2: Run focused tests and confirm failure**
+- [x] **Step 2: Run focused tests and confirm failure**
 
 ```powershell
 python -m pytest tests/test_platform_access_settings.py tests/test_single_platform_admin_migration.py tests/test_default_career_ownership_migration.py tests/test_navigation_config.py -q
@@ -144,7 +144,7 @@ python -m pytest tests/test_platform_access_settings.py tests/test_single_platfo
 
 Expected: the settings module is missing and migration assertions fail.
 
-- [ ] **Step 3: Implement the environment-backed setting**
+- [x] **Step 3: Implement the environment-backed setting**
 
 ```python
 from collections.abc import Mapping
@@ -188,7 +188,7 @@ The downgrade removes only `uq_platform_users_single_admin`; it must not recreat
 
 Add `PLATFORM_ADMIN_EMAIL=admin@example.com` to all three example environments.
 
-- [ ] **Step 4: Run administrator tests**
+- [x] **Step 4: Run administrator tests**
 
 ```powershell
 python -m pytest tests/test_platform_access_settings.py tests/test_single_platform_admin_migration.py tests/test_default_career_ownership_migration.py tests/test_navigation_config.py tests/test_platform_actor_middleware.py -q
@@ -196,7 +196,7 @@ python -m pytest tests/test_platform_access_settings.py tests/test_single_platfo
 
 Expected: all focused tests pass and no private administrator address exists in code or migrations.
 
-- [ ] **Step 5: Commit administrator configuration**
+- [x] **Step 5: Commit administrator configuration**
 
 ```powershell
 git add src/platform_access/settings.py src/platform_access/contracts.py migrations/versions/20260825_20_single_platform_admin.py migrations/versions/20260828_29_assign_default_career_history_to_admin.py tests/test_platform_access_settings.py tests/test_single_platform_admin_migration.py tests/test_default_career_ownership_migration.py tests/test_navigation_config.py .env.example .env.career-assistant.example .env.production.example
@@ -220,7 +220,7 @@ git commit -m "refactor: configure platform administrator by environment"
 - Produces: `normalize_app_origin(value: str | None) -> str | None`, `build_manifest(app_origin: str | None) -> dict`, and `render_service_worker(app_origin: str | None) -> bytes`.
 - Consumes: optional `ZHITAN_APP_ORIGIN`, for example `https://jobs.example.com`; source-unpacked extension continues to support localhost.
 
-- [ ] **Step 1: Add failing package tests**
+- [x] **Step 1: Add failing package tests**
 
 ```python
 def test_package_origin_is_added_without_private_domain() -> None:
@@ -235,7 +235,7 @@ def test_invalid_package_origin_is_rejected() -> None:
         normalize_app_origin("ftp://example.com")
 ```
 
-- [ ] **Step 2: Run the test and confirm failure**
+- [x] **Step 2: Run the test and confirm failure**
 
 ```powershell
 python -m pytest tests/test_package_boss_extension.py -q
@@ -243,7 +243,7 @@ python -m pytest tests/test_package_boss_extension.py -q
 
 Expected: imports fail because the helper functions do not exist.
 
-- [ ] **Step 3: Implement source-local defaults and package-time injection**
+- [x] **Step 3: Implement source-local defaults and package-time injection**
 
 Keep only localhost app origins in source `manifest.json`. Add to `service-worker.js`:
 
@@ -261,7 +261,7 @@ $env:ZHITAN_APP_ORIGIN = 'https://jobs.example.com'
 python scripts/package_boss_extension.py
 ```
 
-- [ ] **Step 4: Run package and extension tests**
+- [x] **Step 4: Run package and extension tests**
 
 ```powershell
 python -m pytest tests/test_package_boss_extension.py tests/test_boss_extension_distribution.py -q
@@ -270,7 +270,7 @@ npm --prefix browser-extension/job-library test
 
 Expected: package tests and extension tests pass; tracked extension sources contain no deployment-specific domain.
 
-- [ ] **Step 5: Commit origin configuration**
+- [x] **Step 5: Commit origin configuration**
 
 ```powershell
 git add tests/test_package_boss_extension.py scripts/package_boss_extension.py browser-extension/job-library/manifest.json browser-extension/job-library/service-worker.js browser-extension/job-library/README.md web-ui/src/components/BossExtensionInstallDialog.vue .env.production.example
@@ -296,7 +296,7 @@ git commit -m "refactor: configure extension application origin"
 - Produces: public brand `ZhiTan`, package identifiers `zhitan-ui`/`zhitan`, and documentation-only example identities.
 - Consumes: no runtime interface changes beyond names shown in logs, HTML, Compose labels, and package metadata.
 
-- [ ] **Step 1: Record the failing sanitization scan**
+- [x] **Step 1: Record the failing sanitization scan**
 
 ```powershell
 rg -n '2963613812@qq\.com|xxlwcc@gmail\.com|43\.155\.86\.239|xingxingtech\.cn|ZhiTan|ZhiTan|sk-[A-Za-z0-9_-]{16,}' .
@@ -304,7 +304,7 @@ rg -n '2963613812@qq\.com|xxlwcc@gmail\.com|43\.155\.86\.239|xingxingtech\.cn|Zh
 
 Expected: matches occur in code, tests, extension sources, and historical documentation.
 
-- [ ] **Step 2: Replace private identifiers with deterministic examples**
+- [x] **Step 2: Replace private identifiers with deterministic examples**
 
 Use these exact substitutions across documentation and fixtures:
 
@@ -320,7 +320,7 @@ test-langsmith-key   -> test-langsmith-key
 
 Do not replace third-party URLs, protocol examples, or references needed for license attribution.
 
-- [ ] **Step 3: Apply public brand identifiers**
+- [x] **Step 3: Apply public brand identifiers**
 
 ```text
 web-ui HTML title              = ZhiTan
@@ -331,7 +331,7 @@ browser extension display name = ZhiTan Browser Assistant
 Doubao TTS request uid         = zhitan
 ```
 
-- [ ] **Step 4: Run the sanitization scan and syntax checks**
+- [x] **Step 4: Run the sanitization scan and syntax checks**
 
 ```powershell
 rg -n '2963613812@qq\.com|xxlwcc@gmail\.com|43\.155\.86\.239|xingxingtech\.cn|ZhiTan|ZhiTan|sk-[A-Za-z0-9_-]{16,}' .
@@ -341,7 +341,7 @@ npm --prefix web-ui test
 
 Expected: the sensitive scan returns no matches; compileall and Node tests pass.
 
-- [ ] **Step 5: Commit brand and sanitization changes**
+- [x] **Step 5: Commit brand and sanitization changes**
 
 ```powershell
 git add web-ui/index.html web-ui/package.json web-ui/package-lock.json config/app.yaml docker-compose.production.yml browser-extension/job-library/manifest.json src/providers/doubao_tts_provider.py tests/test_langsmith_runtime.py docs
@@ -367,7 +367,7 @@ git commit -m "chore: apply ZhiTan brand and sanitize public docs"
 - Produces: public installation, architecture, contribution, vulnerability reporting, responsible-use, and licensing contracts.
 - Consumes: verified commands and existing architecture in `CLAUDE.md`, Compose files, `requirements*.txt`, and `web-ui/package.json`.
 
-- [ ] **Step 1: Write the English README with concrete commands**
+- [x] **Step 1: Write the English README with concrete commands**
 
 ```markdown
 # ZhiTan
@@ -389,19 +389,19 @@ Open-source AI job-search and resume intelligence workbench.
 
 Quickstart uses `.env.production.example`, `docker-compose.production.yml`, `/api/health`, `/career`, and exact repository-supported prerequisites.
 
-- [ ] **Step 2: Write the Chinese README with the same claims and commands**
+- [x] **Step 2: Write the Chinese README with the same claims and commands**
 
 Use the same section order and link back with `[English](README.md)`. Keep `ZhiTan` as the only product name and explain that Resume Assistant and Evaluation Center source remains but their pages are not mounted.
 
-- [ ] **Step 3: Add legal and community policies**
+- [x] **Step 3: Add legal and community policies**
 
 Use the unmodified Apache License 2.0 text in `LICENSE`. `CONTRIBUTING.md` documents setup, focused/full tests, commit/PR expectations, and the no-real-credentials rule. `SECURITY.md` directs reports to GitHub private vulnerability reporting without inventing an email. `SAFETY.md` prohibits unauthorized automated applications, credential capture, impersonation, and misuse of interview/assessment assistance.
 
-- [ ] **Step 4: Build third-party notices from repository evidence**
+- [x] **Step 4: Build third-party notices from repository evidence**
 
 Include Noto CJK under SIL Open Font License 1.1 and the five projects already listed in `docs/open_source_attribution.md`. State that dependency licenses remain governed by upstream packages; do not claim copied code where only design ideas were reviewed.
 
-- [ ] **Step 5: Check links and commit**
+- [x] **Step 5: Check links and commit**
 
 ```powershell
 rg -n '\]\([^)]*\)' README.md README.zh-CN.md CONTRIBUTING.md SECURITY.md SAFETY.md THIRD_PARTY_NOTICES.md
@@ -427,11 +427,11 @@ Expected: every local link target exists and Git reports no whitespace errors.
 - Produces: structured issue intake, PR verification checklist, and Python/Node CI jobs.
 - Consumes: Python 3.12, Node 22, `requirements.txt`, `requirements-career-assistant.txt`, `requirements-development.txt`, and `web-ui/package-lock.json`.
 
-- [ ] **Step 1: Create issue and PR templates**
+- [x] **Step 1: Create issue and PR templates**
 
 Bug reports require environment, reproduction, expected behavior, actual behavior, and sanitized logs. Feature requests require user problem, proposed outcome, alternatives, and scope. PRs require a linked issue, change summary, test evidence, privacy check, and documentation impact.
 
-- [ ] **Step 2: Create CI with isolated backend and frontend jobs**
+- [x] **Step 2: Create CI with isolated backend and frontend jobs**
 
 ```yaml
 name: CI
@@ -468,7 +468,7 @@ jobs:
       - run: npm run build
 ```
 
-- [ ] **Step 3: Validate YAML and referenced frontend commands**
+- [x] **Step 3: Validate YAML and referenced frontend commands**
 
 ```powershell
 python -c "import yaml, pathlib; yaml.safe_load(pathlib.Path('.github/workflows/ci.yml').read_text(encoding='utf-8')); print('workflow yaml ok')"
@@ -478,7 +478,7 @@ npm --prefix web-ui run build
 
 Expected: YAML parses, tests pass, and Vite produces `web-ui/dist`.
 
-- [ ] **Step 4: Commit GitHub configuration**
+- [x] **Step 4: Commit GitHub configuration**
 
 ```powershell
 git add .github
@@ -497,7 +497,7 @@ git commit -m "ci: add GitHub collaboration checks"
 - Produces: complete public repository history and remote `master`.
 - Consumes: all prior commits and the clean working tree.
 
-- [ ] **Step 1: Strengthen ignore rules before staging**
+- [x] **Step 1: Strengthen ignore rules before staging**
 
 ```gitignore
 .env
@@ -519,7 +519,7 @@ web-ui/dist/
 
 Keep `assets/fonts/NotoSansSC-VF.ttf` because its license is included.
 
-- [ ] **Step 2: Run focused and full local verification**
+- [x] **Step 2: Run focused and full local verification**
 
 ```powershell
 python -m pytest tests/test_navigation_config.py tests/test_platform_access_settings.py tests/test_single_platform_admin_migration.py tests/test_default_career_ownership_migration.py tests/test_package_boss_extension.py -q
@@ -532,7 +532,7 @@ npm --prefix browser-extension/job-library test
 
 Expected: all offline tests and frontend build pass. Record any pre-existing external-service failure with its exact test name; do not hide it by changing assertions.
 
-- [ ] **Step 3: Stage all remaining files and scan the actual index**
+- [x] **Step 3: Stage all remaining files and scan the actual index**
 
 ```powershell
 git add --all
@@ -543,13 +543,13 @@ git status --short
 
 Expected: whitespace check passes, sensitive scan returns no matches, and ignored runtime directories are absent from the index.
 
-- [ ] **Step 4: Commit the complete clean snapshot**
+- [x] **Step 4: Commit the complete clean snapshot**
 
 ```powershell
 git commit -m "chore: import clean ZhiTan project snapshot"
 ```
 
-- [ ] **Step 5: Confirm isolation before network mutation**
+- [x] **Step 5: Confirm isolation before network mutation**
 
 ```powershell
 git branch --show-current
@@ -560,7 +560,7 @@ git -C <original-worktree> status --short
 
 Expected: ZhiTan is clean on `master`, has only the ZhiTan remote, and the original repository contains no task-created tracked changes.
 
-- [ ] **Step 6: Push and verify the public repository**
+- [x] **Step 6: Push and verify the public repository**
 
 ```powershell
 git push -u origin master
@@ -569,6 +569,21 @@ git ls-remote --heads origin master
 
 Query `https://api.github.com/repos/HBelike/ZhiTan` and confirm the repository is public, non-empty, and reports `master` as the default branch. If GitHub retains `main`, change the default branch to `master` through authenticated GitHub settings; do not force-push unrelated refs.
 
-- [ ] **Step 7: Record final evidence**
+- [x] **Step 7: Record final evidence**
 
 Append a verification section to this plan with commit SHA, test totals, build result, scan result, remote branch, and any known non-blocking limitation. Commit and push that documentation update.
+
+## Verification record
+
+- Date: 2026-09-02 (Asia/Shanghai)
+- Clean snapshot commit: `853848abdfd60e4ef366a7840ffab43310372220`
+- Python: 609 passed; 5 dependency deprecation warnings
+- Web UI: 226 passed
+- Browser extension: 34 passed
+- Production frontend build: passed with Vite 7.3.6
+- Sensitive-data scan: no known private identifiers or credential-shaped tokens in the Git index
+- Commit identity scan: every commit uses `HBelike@users.noreply.github.com`
+- Public repository: `https://github.com/HBelike/ZhiTan`
+- Remote branch: `master`; GitHub default branch: `master`
+- License boundary: vendor-managed Skill cache exports are ignored and not published; the generic Skill management code remains available
+- Known non-blocking limitation: Vite reports one minified application chunk larger than 500 kB
