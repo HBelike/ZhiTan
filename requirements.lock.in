@@ -1,0 +1,3 @@
+-r requirements.txt
+-r requirements-career-assistant.txt
+-r requirements-development.txt
