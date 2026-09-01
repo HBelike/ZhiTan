@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Find Job · 登录页视觉方案</title>
+    <style>
+      :root {
+        --ink: #1b2b21;
+        --muted: #718076;
+        --line: #dfe7d9;
+        --lime: #95b93e;
+        --lime-dark: #5f7c22;
+        --paper: #f5f7f2;
+        --card: #ffffff;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-width: 1180px;
+        color: var(--ink);
+        background: #edf1ea;
+        font-family: "Noto Sans SC", "Microsoft YaHei UI", "PingFang SC", Arial, sans-serif;
+      }
+      .sheet { max-width: 1520px; margin: 0 auto; padding: 42px 44px 60px; }
+      .masthead { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 28px; }
+      .eyebrow { color: #6a8628; font-size: 11px; font-weight: 800; letter-spacing: .14em; }
+      h1 { margin: 5px 0 0; font-size: 28px; letter-spacing: -.04em; }
+      .masthead p { max-width: 420px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+      .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+      .concept { overflow: hidden; border: 1px solid #dce4d6; border-radius: 20px; background: rgba(255,255,255,.72); box-shadow: 0 15px 30px rgba(64,84,58,.06); }
+      .caption { display: flex; min-height: 150px; flex-direction: column; padding: 22px 24px; }
+      .caption-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+      .caption h2 { margin: 0; font-size: 18px; letter-spacing: -.025em; }
+      .tag { border-radius: 99px; padding: 5px 9px; background: #ebf4d7; color: #628121; font-size: 11px; font-weight: 800; }
+      .caption p { margin: 10px 0 0; color: #708073; font-size: 13px; line-height: 1.65; }
+      .caption button { align-self: flex-start; margin-top: auto; border: 0; border-radius: 8px; padding: 8px 12px; color: #fff; background: #6d8d2a; font: inherit; font-size: 12px; cursor: pointer; }
+      .preview { position: relative; height: 520px; overflow: hidden; }
+      .login-card { position: relative; z-index: 2; width: 310px; border-radius: 16px; background: rgba(255,255,255,.97); box-shadow: 0 26px 70px rgba(20,37,27,.18); }
+      .form { padding: 28px; }
+      .brand { display: flex; align-items: center; gap: 10px; color: #24372a; font-size: 13px; font-weight: 800; }
+      .mark { position: relative; width: 30px; height: 30px; border-radius: 10px; background: #8cad34; box-shadow: inset 0 0 0 1px rgba(255,255,255,.35); }
+      .mark::before, .mark::after { position: absolute; content: ""; background: #fff; }
+      .mark::before { width: 13px; height: 3px; top: 9px; left: 9px; border-radius: 10px; transform: rotate(-38deg); }
+      .mark::after { width: 14px; height: 3px; top: 17px; left: 8px; border-radius: 10px; transform: rotate(39deg); }
+      .form h3 { margin: 30px 0 8px; font-size: 23px; letter-spacing: -.05em; }
+      .form .sub { margin: 0 0 22px; color: #849085; font-size: 12px; line-height: 1.65; }
+      label { display: block; margin: 13px 0 6px; color: #556358; font-size: 11px; font-weight: 700; }
+      .input { height: 42px; border: 1px solid #dde6d7; border-radius: 9px; background: #fbfcfa; padding: 12px; color: #9aa59b; font-size: 12px; }
+      .row { display: flex; justify-content: space-between; margin: 13px 0 20px; color: #718072; font-size: 11px; }
+      .primary { width: 100%; height: 42px; border: 0; border-radius: 9px; color: #fff; background: linear-gradient(110deg,#719126,#a3c542); font-weight: 800; }
+      .legal { margin-top: 18px; color: #929c94; font-size: 10px; line-height: 1.6; }
+
+      /* 方案 A：职业轨道 */
+      .orbit { background: #edf2eb; }
+      .orbit::before { position: absolute; inset: 0; content: ""; opacity: .85; background-image: radial-gradient(circle at 15% 15%, rgba(163,193,90,.32) 0 2px, transparent 2.5px), linear-gradient(135deg, transparent 0 48%, rgba(98,127,56,.16) 48.15% 48.35%, transparent 48.5%); background-size: 43px 43px, 100% 100%; }
+      .orbit .orbit-slab { position: absolute; inset: 0 0 0 0; width: 52%; background: #263a32; clip-path: polygon(0 0, 100% 0, 80% 100%, 0 100%); }
+      .orbit .route { position: absolute; width: 290px; height: 290px; left: 37px; top: 85px; border: 1px solid rgba(186,225,90,.45); border-radius: 50%; }
+      .orbit .route::after { position: absolute; right: 20px; bottom: 22px; width: 9px; height: 9px; border-radius: 50%; content: ""; background: #b8dd5c; box-shadow: 0 0 0 7px rgba(184,221,92,.12); }
+      .orbit .story { position: absolute; left: 42px; top: 77px; width: 188px; color: #edf5e6; }
+      .orbit .story strong { display: block; margin-top: 13px; font-size: 28px; line-height: 1.13; letter-spacing: -.07em; }
+      .orbit .story span { display: block; margin-top: 16px; color: #c6d2c4; font-size: 12px; line-height: 1.8; }
+      .orbit .login-card { margin: 104px 43px 0 auto; }
+
+      /* 方案 B：信号栈 */
+      .signal { background: #101b29; }
+      .signal::before { position: absolute; inset: 0; content: ""; opacity: .2; background-image: linear-gradient(rgba(181,214,218,.3) 1px, transparent 1px), linear-gradient(90deg, rgba(181,214,218,.3) 1px, transparent 1px); background-size: 28px 28px; }
+      .signal .signal-copy { position: absolute; left: 38px; top: 70px; width: 210px; color: #eff9f6; }
+      .signal .signal-copy .eyebrow { color: #88d9c5; }
+      .signal .signal-copy strong { display: block; margin-top: 13px; font-size: 29px; line-height: 1.12; letter-spacing: -.07em; }
+      .signal .signal-copy p { color: #a6b8bd; font-size: 12px; line-height: 1.75; }
+      .signal .signals { position: absolute; left: 36px; bottom: 72px; display: flex; flex-direction: column; gap: 12px; }
+      .signal .line { width: 180px; height: 7px; border-radius: 99px; background: linear-gradient(90deg,#75d7c1 0 22%,rgba(255,255,255,.13) 22% 100%); }
+      .signal .line:nth-child(2) { width: 132px; background: linear-gradient(90deg,#bddf64 0 52%,rgba(255,255,255,.13) 52% 100%); }
+      .signal .line:nth-child(3) { width: 164px; background: linear-gradient(90deg,#54a9dc 0 16%,rgba(255,255,255,.13) 16% 100%); }
+      .signal .login-card { margin: 84px 40px 0 auto; border: 1px solid rgba(201,235,227,.28); }
+      .signal .mark { background: #207a7a; }
+      .signal .primary { background: linear-gradient(110deg,#207a7a,#3aa895); }
+
+      /* 方案 C：面试索引卡 */
+      .index { background: #f4f7fa; }
+      .index::before { position: absolute; right: -65px; top: -55px; width: 345px; height: 345px; content: ""; border: 1px solid #a6c8d6; border-radius: 50%; box-shadow: -42px 42px 0 -41px #a6c8d6, -84px 84px 0 -83px #a6c8d6; }
+      .index .index-title { position: absolute; left: 36px; top: 56px; width: 195px; }
+      .index .index-title strong { display: block; margin-top: 12px; color: #203d53; font-size: 29px; line-height: 1.1; letter-spacing: -.07em; }
+      .index .index-title p { color: #6f818b; font-size: 12px; line-height: 1.75; }
+      .index .index-stack { position: absolute; left: 37px; bottom: 56px; width: 210px; }
+      .index .index-item { display: flex; gap: 9px; align-items: center; height: 40px; margin-top: 7px; border: 1px solid #d5e0e3; border-radius: 8px; background: rgba(255,255,255,.78); padding: 0 11px; color: #48616c; font-size: 11px; }
+      .index .number { color: #7ca539; font-weight: 900; }
+      .index .login-card { margin: 95px 42px 0 auto; border-radius: 12px; }
+      .index .mark { background: #315f78; }
+      .index .primary { background: linear-gradient(110deg,#315f78,#54849c); }
+      .index .tag { background: #e5f0f5; color: #487188; }
+
+      .selected { outline: 3px solid #a9cd51; outline-offset: -3px; }
+      .note { margin: 24px 0 0; border-top: 1px solid #dbe3d6; padding-top: 15px; color: #6d7c70; font-size: 12px; }
+      .note b { color: #3b4d3f; }
+    </style>
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="masthead">
+        <div>
+          <div class="eyebrow">AUTHENTICATION CONCEPTS · 01</div>
+          <h1>Find Job · 登录页视觉方向</h1>
+        </div>
+        <p>登录页的单一任务是让求职者安全、快速进入“求职助手”。以下为独立静态样式，不包含真实登录、注册或第三方授权。</p>
+      </header>
+      <section class="grid">
+        <article class="concept" id="concept-a">
+          <div class="preview orbit">
+            <div class="orbit-slab"></div><div class="route"></div>
+            <div class="story"><div class="eyebrow">CAREER TRAJECTORY</div><strong>让每一步<br>都更有方向。</strong><span>从简历诊断到面试复盘，把求职过程组织成可行动的路径。</span></div>
+            <div class="login-card"><div class="form"><div class="brand"><i class="mark"></i>Find Job</div><h3>欢迎回来</h3><p class="sub">继续整理你的求职线索与职业计划。</p><label>账号</label><div class="input">输入用户名或邮箱</div><label>密码</label><div class="input">输入密码</div><div class="row"><span>□ 记住登录状态</span><span>忘记密码</span></div><button class="primary">进入求职助手</button><div class="legal">登录即代表你同意平台服务条款与隐私说明。</div></div></div>
+          </div>
+          <div class="caption"><div class="caption-top"><h2>A · 职业轨道</h2><span class="tag">推荐</span></div><p>深绿职场底板 + 轻量轨道图形。既延续现有绿色产品识别，又让“职业路径”成为登录页的核心记忆点。</p><button onclick="selectConcept('concept-a')">选择此方向</button></div>
+        </article>
+        <article class="concept" id="concept-b">
+          <div class="preview signal">
+            <div class="signal-copy"><div class="eyebrow">CAREER SIGNAL ROOM</div><strong>把机会<br>变成清晰信号。</strong><p>面经、岗位与能力证据，在同一条职业信号链中收敛。</p></div>
+            <div class="signals"><i class="line"></i><i class="line"></i><i class="line"></i></div>
+            <div class="login-card"><div class="form"><div class="brand"><i class="mark"></i>Find Job</div><h3>登录工作台</h3><p class="sub">进入个人求职智能工作区。</p><label>账号</label><div class="input">输入用户名或邮箱</div><label>密码</label><div class="input">输入密码</div><div class="row"><span>□ 保持登录</span><span>找回密码</span></div><button class="primary">安全登录</button><div class="legal">使用受保护会话保存登录状态。</div></div></div>
+          </div>
+          <div class="caption"><div class="caption-top"><h2>B · 信号栈</h2><span class="tag">科技感最强</span></div><p>冷静深蓝空间与数据栅格，突出 AI Agent 的“信号处理”特征；更适合后续扩展监控中心和开发者能力。</p><button onclick="selectConcept('concept-b')">选择此方向</button></div>
+        </article>
+        <article class="concept" id="concept-c">
+          <div class="preview index">
+            <div class="index-title"><div class="eyebrow">INTERVIEW INDEX</div><strong>把经验<br>变成下一次回答。</strong><p>从真实面经中提炼答案，而不是重复背诵模板。</p></div>
+            <div class="index-stack"><div class="index-item"><b class="number">01</b> 简历诊断完成</div><div class="index-item"><b class="number">02</b> 岗位匹配进行中</div><div class="index-item"><b class="number">03</b> 面经上下文已连接</div></div>
+            <div class="login-card"><div class="form"><div class="brand"><i class="mark"></i>Find Job</div><h3>进入面试准备区</h3><p class="sub">查看面经、练习回答并管理职业档案。</p><label>账号</label><div class="input">输入用户名或邮箱</div><label>密码</label><div class="input">输入密码</div><div class="row"><span>□ 记住我</span><span>忘记密码</span></div><button class="primary">登录并继续</button><div class="legal">个人资料仅用于你的职业辅助服务。</div></div></div>
+          </div>
+          <div class="caption"><div class="caption-top"><h2>C · 面试索引</h2><span class="tag">最克制</span></div><p>偏专业工具的浅色索引卡风格，信息密度恰当、易于长期使用；适合作为个人作品站和职业档案入口。</p><button onclick="selectConcept('concept-c')">选择此方向</button></div>
+        </article>
+      </section>
+      <p class="note"><b>设计选择：</b>我刻意避开了通用的“居中白卡 + 渐变背景”登录页。A 把职业路径做成品牌符号；B 把 Agent 调度感做成空间语言；C 则把面试资料库的“索引”变成视觉结构。</p>
+    </main>
+    <script>
+      function selectConcept(id) {
+        document.querySelectorAll('.concept').forEach((item) => item.classList.remove('selected'));
+        document.getElementById(id).classList.add('selected');
+      }
+    </script>
+  </body>
+</html>

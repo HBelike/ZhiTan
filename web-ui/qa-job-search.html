@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN" data-ui-theme="blue">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>职位库 UI 评审</title>
+  </head>
+  <body>
+    <div id="qa-app"></div>
+    <script type="module">
+      import { createApp, h } from 'vue'
+      import './src/theme.css'
+      import './src/styles.css'
+      import JobSearchWorkspace from './src/components/JobSearchWorkspace.vue'
+
+      const navItems = ['工作台', '求职助手', '简历助手', '面经库', '技能库', '评测中心', 'LangSmith', '管理台']
+
+      const QaShell = {
+        setup() {
+          return () => h('div', { class: 'shell qa-shell' }, [
+            h('aside', { class: 'sidebar' }, [
+              h('div', { class: 'brand' }, [
+                h('div', { class: 'brand-icon' }, 'AI'),
+                h('div', [h('strong', 'Find Job'), h('span', 'Agent 内容工坊')])
+              ]),
+              h('nav', { class: 'nav-list', 'aria-label': '应用主导航' }, navItems.map((label, index) =>
+                h('button', { class: ['nav-item', label === '面经库' ? 'active' : ''], type: 'button' }, [
+                  h('span', { class: 'nav-icon' }, ['▣', '◉', '✦', '⌘', '✦', '≋', '◌', '⚙'][index]),
+                  h('span', { class: 'nav-copy' }, [h('strong', label)])
+                ])
+              )),
+              h('div', { class: 'sidebar-card' }, [
+                h('p', '职位数据来自已登录浏览器'),
+                h('p', '点击岗位时刷新最新详情'),
+                h('p', '当前为 UI 评审模式')
+              ])
+            ]),
+            h('main', { class: 'main interview-library-route' }, [
+              h('header', { class: 'topbar' }, [
+                h('h1', '职位库'),
+                h('div', { class: 'topbar-account' }, [
+                  h('button', { class: 'account-breadcrumb', type: 'button' }, [
+                    h('span', { class: 'account-breadcrumb-avatar' }, 'S'),
+                    h('span', { class: 'account-breadcrumb-name' }, 'smith jack'),
+                    h('i', '/'),
+                    h('span', { class: 'account-breadcrumb-role' }, '管理员'),
+                    h('span', { class: 'account-breadcrumb-chevron' })
+                  ])
+                ])
+              ]),
+              h(JobSearchWorkspace, { onBack: () => {} })
+            ])
+          ])
+        }
+      }
+
+      createApp(QaShell).mount('#qa-app')
+    </script>
+  </body>
+</html>

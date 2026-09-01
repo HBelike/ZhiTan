@@ -1,0 +1,37 @@
+# 生产公网入口：仅 Caddy 映射 80/443；Web、API、数据库与文档服务全部留在 Docker 私网。
+# APP_DOMAIN 必须是已解析到服务器公网 IP 的裸域名或子域名，不能填写 https:// 前缀。
+{$APP_DOMAIN} {
+    encode zstd gzip
+    log {
+        output stdout
+        format json
+    }
+
+    header {
+        -Server
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "camera=(), microphone=(self), geolocation=()"
+    }
+
+    # LocalPublicStorageProvider 仅将已复制到 outputs/public 的媒体暴露为只读文件，
+    # 供微信公众号和未来的视频 Provider 从公网拉取；不暴露原始生成目录或应用数据。
+    handle_path /media/* {
+        root * /srv/application-outputs/public
+        file_server
+    }
+
+    # SSE 对话与普通 API 均直达 FastAPI，避免额外 Nginx 层重写 X-Forwarded-Proto。
+    @api path /api/*
+    handle @api {
+        reverse_proxy career-api:8012 {
+            flush_interval -1
+        }
+    }
+
+    # Vue SPA 的静态文件和 history fallback 仍由现有 Nginx Web 容器处理。
+    handle {
+        reverse_proxy career-web:80
+    }
+}

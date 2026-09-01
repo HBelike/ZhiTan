@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>简历助手原型</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">AI</span>
+        <span>
+          <strong>职业智能工作台</strong>
+          <small>Agent 内容工坊</small>
+        </span>
+      </div>
+      <nav>
+        <a href="#">▣ <span>工作台</span></a>
+        <a href="#">◉ <span>求职助手</span></a>
+        <a href="#" class="active">✦ <span>简历助手</span></a>
+        <a href="#">⌘ <span>面经库</span></a>
+        <a href="#">✦ <span>技能库</span></a>
+        <a href="#">○ <span>可观测性</span></a>
+        <a href="#">⚙ <span>管理台</span></a>
+        <a href="#">▤ <span>知识库</span></a>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <section id="homeView" class="view active-view">
+        <header class="page-header">
+          <h1>简历助手</h1>
+          <button id="createTaskButton" class="primary-button">＋ 新建优化任务</button>
+        </header>
+
+        <section class="history-search" aria-label="筛选优化记录">
+          <div class="search-fields">
+            <label class="filter-field keyword-field">
+              <span>岗位名称</span>
+              <span class="input-shell search-input-shell">
+                <i aria-hidden="true">⌕</i>
+                <input id="jobTitleFilter" type="search" placeholder="搜索岗位名称" />
+              </span>
+            </label>
+            <div class="filter-field date-range-field">
+              <span>创建日期</span>
+              <div class="date-range-inputs">
+                <input id="dateFromFilter" type="date" aria-label="开始日期" />
+                <i aria-hidden="true">至</i>
+                <input id="dateToFilter" type="date" aria-label="结束日期" />
+              </div>
+            </div>
+            <div class="filter-actions">
+              <button id="searchButton" class="primary-button">搜索</button>
+              <button id="resetSearchButton" class="secondary-button">重置</button>
+            </div>
+          </div>
+        </section>
+
+        <div class="section-heading">
+          <h2>优化记录</h2>
+          <span id="recordCount" class="page-count">0 条 · 第 1 页</span>
+        </div>
+
+        <div id="taskGrid" class="task-grid" aria-label="简历优化任务列表"></div>
+
+        <footer class="pagination">
+          <button disabled>上一页</button>
+          <span>1 / 1</span>
+          <button disabled>下一页</button>
+        </footer>
+      </section>
+
+      <section id="workspaceView" class="view workspace-view">
+        <header class="workspace-header">
+          <div>
+            <button id="cancelWorkspaceButton" class="text-button">← 返回优化记录</button>
+            <h1>新建简历优化</h1>
+          </div>
+          <div class="workspace-actions">
+            <button id="regenerateButton" class="secondary-button hidden">重新分析</button>
+            <button id="generateResumeButton" class="primary-button hidden">采纳意见并生成简历</button>
+            <button id="saveRecordButton" class="primary-button hidden">保存到历史记录</button>
+          </div>
+        </header>
+
+        <section class="workspace-setup" aria-label="简历分析材料">
+          <label class="setup-field file-setup-field">
+            <span>原始简历</span>
+            <span class="setup-control file-control">
+              <input id="resumeFileInput" type="file" accept=".doc,.docx,.pdf" />
+              <strong id="resumeFileName">选择 DOC、DOCX 或 PDF</strong>
+              <i>选择文件</i>
+            </span>
+          </label>
+          <label class="setup-field">
+            <span>目标岗位</span>
+            <input id="workspaceJobTitle" type="text" placeholder="例如：AI Agent 开发工程师" />
+          </label>
+          <label class="setup-field model-setup-field">
+            <span>分析模型</span>
+            <select id="workspaceModel"><option>deepseek-v4-flash</option></select>
+          </label>
+          <label class="setup-field job-description-field">
+            <span>岗位介绍</span>
+            <textarea id="jobDescriptionInput" placeholder="粘贴岗位职责和任职要求，或补充岗位截图中的关键信息"></textarea>
+            <span class="image-upload-control">
+              <input id="jobImageInput" type="file" accept="image/*" />
+              <i>＋ 上传岗位截图</i>
+              <small id="jobImageName">未上传截图</small>
+            </span>
+          </label>
+          <label class="setup-field extra-prompt-field">
+            <span>额外要求</span>
+            <textarea id="extraPromptInput" placeholder="例如：突出 Agent 项目，保持两页以内，弱化传统 CRUD 经历"></textarea>
+          </label>
+          <button id="startAnalysisButton" class="primary-button analysis-button">开始分析</button>
+        </section>
+
+        <section class="review-canvas" aria-label="简历优化工作画布">
+          <article class="canvas-panel original-canvas-panel">
+            <header class="canvas-panel-header">
+              <div>
+                <span>原始简历</span>
+                <h2 id="canvasSourceFileName">尚未选择文件</h2>
+              </div>
+              <button class="secondary-button compact-button" data-preview="source">全屏预览</button>
+            </header>
+            <div class="resume-sheet source-resume-sheet">
+              <div class="resume-sheet-empty" id="sourceResumeEmpty">
+                <strong>上传简历后在这里核对原稿</strong>
+                <span>系统只在当前任务中解析文件，保存时仅记录原稿与优化稿。</span>
+              </div>
+              <div id="sourceResumeContent" class="resume-sheet-content hidden">
+                <h1>郭琳琳</h1>
+                <p class="sheet-role">后端开发工程师</p>
+                <p class="sheet-meta">上海 · 3 年开发经验 · Java / Python</p>
+                <h3>个人概述</h3>
+                <p>具备 Java 后端开发经验，参与业务系统、数据服务与自动化平台建设。</p>
+                <h3>项目经历</h3>
+                <h4>职业智能工作台</h4>
+                <ul>
+                  <li>参与工作台后端接口和任务流程开发。</li>
+                  <li>完成文档解析、内容生成和数据持久化功能。</li>
+                </ul>
+                <h3>技术能力</h3>
+                <p>Java · Python · FastAPI · PostgreSQL · Docker</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="canvas-panel assistant-canvas-panel">
+            <header class="canvas-panel-header assistant-header">
+              <div>
+                <span>简历优化助手</span>
+                <h2>针对目标岗位给出可执行修改意见</h2>
+              </div>
+              <span id="analysisStage" class="stage-chip">等待材料</span>
+            </header>
+            <div class="assistant-tabs">
+              <button id="suggestionTab" class="active">优化意见</button>
+              <button id="optimizedResumeTab" disabled>优化后简历</button>
+            </div>
+
+            <div id="analysisEmpty" class="assistant-empty">
+              <span class="assistant-mark">AI</span>
+              <strong>上传简历并填写岗位介绍</strong>
+              <p>点击“开始分析”后，优化意见会直接显示在当前画布。</p>
+            </div>
+
+            <div id="analysisLoading" class="assistant-loading hidden">
+              <span></span><span></span><span></span>
+              <strong>正在比对简历与岗位要求</strong>
+            </div>
+
+            <div id="suggestionContent" class="suggestion-content hidden">
+              <div class="suggestion-summary">
+                <strong>建议优先调整 5 处内容</strong>
+                <span>已按岗位匹配影响从高到低排列</span>
+              </div>
+              <label class="suggestion-item">
+                <input type="checkbox" checked />
+                <span><strong>重写个人概述</strong><small>把“后端开发经验”改为“Agent 应用与后端工程经验”，前置 LangGraph、RAG 和多模型接入能力。</small></span>
+              </label>
+              <label class="suggestion-item">
+                <input type="checkbox" checked />
+                <span><strong>补全工作流职责</strong><small>明确说明负责节点编排、任务状态流转和人工审核链路，而不是笼统描述“参与平台开发”。</small></span>
+              </label>
+              <label class="suggestion-item">
+                <input type="checkbox" checked />
+                <span><strong>强化文档理解能力</strong><small>补充 Docling 与视觉模型的职责边界，以及 PDF、DOCX、图片材料的统一解析过程。</small></span>
+              </label>
+              <label class="suggestion-item">
+                <input type="checkbox" checked />
+                <span><strong>增加结果指标</strong><small>为内容工作流补充可验证的结果，例如支持的任务类型、生成物数量和人工审核闭环。</small></span>
+              </label>
+              <label class="suggestion-item">
+                <input type="checkbox" checked />
+                <span><strong>调整技能排序</strong><small>优先展示 LangGraph、FastAPI、PostgreSQL、Docling 和 DeepSeek，弱化与岗位关联较低的通用技能。</small></span>
+              </label>
+              <div class="suggestion-footer">
+                <span>可以取消不希望采用的意见，再生成优化版简历。</span>
+              </div>
+            </div>
+
+            <div id="optimizedResumeContent" class="optimized-resume-content hidden">
+              <div class="generated-resume-toolbar">
+                <div><strong>优化版简历已生成</strong><span>尚未写入历史记录</span></div>
+                <button class="secondary-button compact-button" data-preview="optimized">全屏预览</button>
+              </div>
+              <div class="resume-sheet optimized-resume-sheet">
+                <div class="resume-sheet-content">
+                  <h1>郭琳琳</h1>
+                  <p class="sheet-role">AI Agent 开发工程师</p>
+                  <p class="sheet-meta">上海 · 3 年开发经验 · Java / Python / LangGraph</p>
+                  <h3>个人概述</h3>
+                  <p>具备 Agent 应用与后端工程经验，能够完成多 Agent 工作流编排、文档理解、RAG 检索和多模型服务接入。</p>
+                  <h3>项目经历</h3>
+                  <h4>职业智能工作台</h4>
+                  <ul>
+                    <li>基于 LangGraph 编排简历分析、面经沉淀与内容生成任务，支持节点状态追踪和人工确认。</li>
+                    <li>基于 Docling 与视觉模型统一解析 PDF、DOCX 和图片材料，为岗位匹配提供结构化上下文。</li>
+                    <li>基于 FastAPI、PostgreSQL 和 Vue 3 完成模型配置、历史会话与生成结果管理。</li>
+                  </ul>
+                  <h3>技术能力</h3>
+                  <p>LangGraph · FastAPI · PostgreSQL · Docling · DeepSeek · Docker</p>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+      </section>
+
+      <section id="detailView" class="view detail-view">
+        <header class="page-header detail-header">
+          <div>
+            <button id="backButton" class="text-button">← 返回优化记录</button>
+            <p class="eyebrow">FINAL RECORD</p>
+            <h1 id="detailTitle">Java Agent 开发工程师</h1>
+          </div>
+          <div class="header-actions">
+            <button class="secondary-button" data-action="review">查看修改建议</button>
+          </div>
+        </header>
+
+        <div class="task-summary">
+          <span><small>创建人</small><strong id="detailCreator">郭琳琳</strong></span>
+          <span><small>创建时间</small><strong id="detailCreatedAt">2026-08-17 14:30</strong></span>
+          <span><small>分析模型</small><strong>deepseek-v4-flash</strong></span>
+        </div>
+
+        <div class="compare-grid">
+          <article class="file-panel source-panel">
+            <div class="file-panel-head">
+              <span class="file-role">原始简历</span>
+              <span class="file-type">DOCX</span>
+            </div>
+            <h2>郭琳琳-后端开发.docx</h2>
+            <p>2.1 MB · 本次任务原文件</p>
+            <button class="document-preview" data-preview="source" aria-label="全屏预览原始简历">
+              <span class="document-paper">
+                <strong>郭琳琳</strong>
+                <small>后端开发工程师 / Java / Agent</small>
+                <i></i><i></i><i></i>
+                <b>项目经历</b>
+                <i></i><i></i><i></i><i></i>
+              </span>
+              <span class="preview-hint">点击全屏预览</span>
+            </button>
+            <div class="file-actions single-action">
+              <button class="secondary-button preview-button" data-preview="source">全屏预览</button>
+            </div>
+          </article>
+
+          <div class="version-bridge" aria-hidden="true">
+            <span>原稿</span>
+            <i>→</i>
+            <span>优化稿</span>
+          </div>
+
+          <article class="file-panel optimized-panel">
+            <div class="file-panel-head">
+              <span class="file-role">优化后简历</span>
+              <span class="file-type">DOCX + PDF</span>
+            </div>
+            <h2>郭琳琳-Agent开发-优化版.docx</h2>
+            <p>已采用 8 条建议 · 同步生成 PDF</p>
+            <button class="document-preview optimized-preview" data-preview="optimized" aria-label="全屏预览优化简历">
+              <span class="document-paper">
+                <strong>郭琳琳</strong>
+                <small>AI Agent 开发工程师 / LangGraph / RAG</small>
+                <i></i><i></i><i></i>
+                <b>Agent 项目经历</b>
+                <i></i><i></i><i></i><i></i>
+              </span>
+              <span class="preview-hint">点击全屏预览</span>
+            </button>
+            <div class="file-actions">
+              <button class="secondary-button preview-button" data-preview="optimized">全屏预览</button>
+              <button class="primary-button" data-action="download-docx">下载 DOCX</button>
+              <button class="secondary-button" data-action="download-pdf">下载 PDF</button>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="previewOverlay" class="preview-overlay" aria-hidden="true">
+    <header>
+      <div>
+        <small id="previewRole">原始简历</small>
+        <strong id="previewFileName">郭琳琳-后端开发.docx</strong>
+      </div>
+      <div>
+        <button id="overlayDownload" class="secondary-button">下载文件</button>
+        <button id="closePreview" class="close-button" aria-label="关闭全屏预览">×</button>
+      </div>
+    </header>
+    <div class="fullscreen-document">
+      <article>
+        <h1>郭琳琳</h1>
+        <p class="resume-role">AI Agent 开发工程师</p>
+        <div class="resume-meta">上海　·　3 年开发经验　·　Java / Python / LangGraph</div>
+        <h2>个人概述</h2>
+        <p>具备后端服务与 Agent 应用开发经验，参与过多 Agent 编排、文档解析、RAG 检索与内容工作流建设。</p>
+        <h2>项目经历</h2>
+        <h3>职业智能工作台</h3>
+        <ul>
+          <li>基于 FastAPI、Vue 3 与 LangGraph 搭建职业场景工作台。</li>
+          <li>实现简历解析、岗位匹配、面经沉淀和人工审核工作流。</li>
+          <li>通过 Docling 与视觉模型完成 PDF、DOCX 和图片材料理解。</li>
+        </ul>
+        <h2>技术能力</h2>
+        <p>LangGraph · FastAPI · PostgreSQL · Docling · DeepSeek · Docker</p>
+      </article>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status"></div>
+  <script src="./app.js"></script>
+</body>
+</html>

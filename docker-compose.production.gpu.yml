@@ -1,0 +1,10 @@
+# 仅在 NVIDIA GPU 服务器上与 docker-compose.production.yml 叠加使用。
+# 这份覆盖文件保持基础 Compose 的服务名和 API 地址不变，仅替换镜像与运行时要求。
+services:
+  career-docling:
+    image: ghcr.io/docling-project/docling-serve-cu128:v1.21.0
+    environment:
+      DOCLING_DEVICE: cuda
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+    gpus: all

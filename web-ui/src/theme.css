@@ -1,0 +1,2087 @@
+:root {
+  --ui-font-display: "Segoe UI Variable Display", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --ui-font-body: Inter, "Segoe UI Variable Text", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --ui-font-utility: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+:root[data-ui-theme="blue"] {
+  color-scheme: light;
+  --ui-canvas: #f5f8fd;
+  --ui-sidebar: #f7faff;
+  --ui-surface: #ffffff;
+  --ui-surface-soft: #f4f8fe;
+  --ui-surface-active: #eaf3ff;
+  --ui-line: #d7e4f6;
+  --ui-line-strong: #b9cfed;
+  --ui-text: #17223b;
+  --ui-text-secondary: #526078;
+  --ui-text-muted: #7b879c;
+  --ui-accent: #0064dd;
+  --ui-accent-hover: #0058c7;
+  --ui-accent-ink: #004aa8;
+  --ui-accent-mid: #6f9fdd;
+  --ui-brand-deep: #17345b;
+  --ui-brand-shadow: rgba(23, 52, 91, 0.18);
+  --ui-focus: rgba(0, 100, 221, 0.16);
+  --ui-danger: #b54747;
+  --ui-danger-soft: #fff3f3;
+  --ui-warning: #9a650d;
+  --ui-warning-soft: #fff8e8;
+  --ui-success: #247a5a;
+  --ui-success-soft: #edf9f4;
+  --ui-shadow: 0 10px 30px rgba(27, 51, 92, 0.06);
+}
+
+:root[data-ui-theme="green"] {
+  color-scheme: light;
+  --ui-canvas: #f5f6f0;
+  --ui-sidebar: #fbfcf7;
+  --ui-surface: #ffffff;
+  --ui-surface-soft: #f8faf5;
+  --ui-surface-active: #eef5dc;
+  --ui-line: #e3e7da;
+  --ui-line-strong: #d5dfca;
+  --ui-text: #253024;
+  --ui-text-secondary: #5f6559;
+  --ui-text-muted: #7b826f;
+  --ui-accent: #89a93e;
+  --ui-accent-hover: #76952f;
+  --ui-accent-ink: #5f7f23;
+  --ui-brand-deep: #395225;
+  --ui-brand-shadow: rgba(57, 82, 37, 0.18);
+  --ui-focus: rgba(137, 169, 62, 0.16);
+  --ui-shadow: 0 10px 30px rgba(52, 62, 39, 0.06);
+}
+
+html,
+body,
+#app {
+  font-family: var(--ui-font-body);
+}
+
+body {
+  background: var(--ui-canvas);
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--ui-accent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+/* 主题入口保持为唯一的双色视觉控件。 */
+.theme-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  border: 1px solid var(--ui-line);
+  border-radius: 10px;
+  background: var(--ui-surface-soft);
+  padding: 3px;
+}
+
+.theme-option {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ui-text-muted);
+  padding: 5px 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.theme-option i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--ui-surface);
+}
+
+.theme-option.active {
+  background: var(--ui-surface);
+  box-shadow: 0 1px 4px rgba(23, 34, 59, 0.08);
+  color: var(--ui-text);
+}
+
+.theme-switcher.compact .theme-option {
+  min-height: 28px;
+  padding: 4px 7px;
+}
+
+/* 蓝白主题：先统一壳层，再收敛业务页面内部的视觉语言。 */
+html[data-ui-theme="blue"] body {
+  color: var(--ui-text);
+  background: var(--ui-canvas);
+}
+
+html[data-ui-theme="blue"] .shell {
+  grid-template-columns: 232px minmax(0, 1fr);
+  background: var(--ui-canvas);
+}
+
+html[data-ui-theme="blue"] .sidebar {
+  gap: 20px;
+  border-right-color: var(--ui-line);
+  background: var(--ui-sidebar);
+  padding: 18px 14px;
+}
+
+html[data-ui-theme="blue"] .brand {
+  gap: 11px;
+  padding: 2px 6px 10px;
+}
+
+html[data-ui-theme="blue"] .brand-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 11px 20px 11px 20px;
+  background: linear-gradient(145deg, var(--ui-brand-deep), var(--ui-accent));
+  box-shadow: 0 7px 18px var(--ui-brand-shadow);
+}
+
+html[data-ui-theme="blue"] .brand strong {
+  color: var(--ui-text);
+  font-family: var(--ui-font-display);
+  font-size: 18px;
+  letter-spacing: -0.02em;
+}
+
+html[data-ui-theme="blue"] .brand span,
+html[data-ui-theme="blue"] .topbar-account {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] .nav-list {
+  gap: 4px;
+}
+
+html[data-ui-theme="blue"] .nav-item {
+  position: relative;
+  min-height: 42px;
+  gap: 10px;
+  border-radius: 8px;
+  color: var(--ui-text-secondary);
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+html[data-ui-theme="blue"] .nav-icon {
+  width: 22px;
+  height: 22px;
+  color: var(--ui-text-muted);
+  font-size: 14px;
+}
+
+html[data-ui-theme="blue"] .nav-item:hover {
+  background: var(--ui-surface-soft);
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] .nav-item.active {
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] .nav-item.active::before {
+  position: absolute;
+  top: 9px;
+  bottom: 9px;
+  left: -14px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--ui-accent);
+  content: "";
+}
+
+html[data-ui-theme="blue"] .nav-item.active .nav-icon {
+  color: var(--ui-accent);
+}
+
+html[data-ui-theme="blue"] .sidebar-card {
+  border: 0;
+  border-top: 1px solid var(--ui-line);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ui-text-muted);
+  padding: 14px 6px 2px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+html[data-ui-theme="blue"] .main {
+  background: var(--ui-canvas);
+  padding: 18px 24px 24px;
+}
+
+html[data-ui-theme="blue"] .topbar {
+  min-height: 56px;
+  margin-bottom: 12px;
+  border-color: var(--ui-line);
+  background: linear-gradient(110deg, var(--ui-surface) 0%, var(--ui-surface) 74%, var(--ui-surface-soft) 100%);
+  padding: 9px 12px 9px 18px;
+  box-shadow: var(--ui-shadow);
+}
+
+html[data-ui-theme="blue"] .topbar h1 {
+  color: var(--ui-text);
+  font-family: var(--ui-font-display);
+  font-size: 24px;
+  font-weight: 720;
+  letter-spacing: -0.025em;
+}
+
+html[data-ui-theme="blue"] .account-breadcrumb,
+html[data-ui-theme="blue"] .account-menu {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] :is(.eyebrow, .library-kicker, .section-label) {
+  color: var(--ui-accent-ink);
+  letter-spacing: 0.09em;
+}
+
+html[data-ui-theme="blue"] :is(h1, h2, h3),
+html[data-ui-theme="blue"] :is(.panel-header, .module-card-header) strong {
+  color: var(--ui-text);
+  font-family: var(--ui-font-display);
+}
+
+html[data-ui-theme="blue"] :is(
+  .health-card,
+  .module-card,
+  .storyboard-home,
+  .detail-card,
+  .review-action-row,
+  .skill-sub-sidebar,
+  .skill-search-panel,
+  .skill-editor-panel,
+  .observability-state,
+  .observability-status-grid article,
+  .observability-console-card,
+  .admin-config-card,
+  .manual-pipeline-card
+) {
+  border-color: var(--ui-line);
+  border-radius: 12px;
+  background: var(--ui-surface);
+  box-shadow: none;
+}
+
+html[data-ui-theme="blue"] :is(.health-card, .module-card, .detail-card) p {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] .module-grid {
+  gap: 12px;
+}
+
+html[data-ui-theme="blue"] .module-card {
+  min-height: 340px;
+  padding: 18px;
+  transition: border-color 0.16s ease, background-color 0.16s ease;
+}
+
+html[data-ui-theme="blue"] .module-card:hover {
+  transform: none;
+  border-color: var(--ui-line-strong);
+  background: #fdfefe;
+  box-shadow: none;
+}
+
+html[data-ui-theme="blue"] :is(.module-card button, .secondary-button, .detail-toolbar button) {
+  border: 1px solid var(--ui-line);
+  border-radius: 9px;
+  background: var(--ui-surface);
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] :is(.module-card button, .secondary-button, .detail-toolbar button):hover {
+  border-color: var(--ui-line-strong);
+  background: var(--ui-surface-soft);
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] :is(.refresh-button, .primary-button, .primary-action, .send-button, .login-submit) {
+  border: 1px solid var(--ui-accent);
+  border-radius: 9px;
+  background: var(--ui-accent);
+  box-shadow: none;
+  color: #ffffff;
+}
+
+html[data-ui-theme="blue"] :is(.refresh-button, .primary-button, .primary-action, .send-button, .login-submit):hover:not(:disabled) {
+  background: var(--ui-accent-hover);
+  transform: none;
+}
+
+html[data-ui-theme="blue"] :is(
+  input,
+  textarea,
+  select,
+  .installed-skill-search,
+  .skill-markdown-editor,
+  .admin-field-grid input,
+  .admin-prompt-grid textarea
+) {
+  border-color: var(--ui-line);
+  border-radius: 9px;
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  box-shadow: none;
+}
+
+html[data-ui-theme="blue"] :is(input, textarea, select):focus {
+  border-color: var(--ui-accent);
+  box-shadow: 0 0 0 3px var(--ui-focus);
+  outline: none;
+}
+
+html[data-ui-theme="blue"] :is(
+  .health-stats span,
+  .reason-chip,
+  .asset-count,
+  .week-tag,
+  .admin-config-version,
+  .manual-pipeline-badge,
+  .skill-sidebar-title > strong,
+  .skill-info-strip span,
+  .skill-detail-meta span
+) {
+  border-radius: 7px;
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+  box-shadow: none;
+}
+
+html[data-ui-theme="blue"] :is(.status-pill.is-success, .alert.success, .admin-console-alert.success, .manual-pipeline-alert.success) {
+  border-color: #c7eadb;
+  background: var(--ui-success-soft);
+  color: var(--ui-success);
+}
+
+html[data-ui-theme="blue"] :is(.status-pill.is-danger, .alert.danger, .admin-console-alert.danger, .manual-pipeline-alert.danger) {
+  border-color: #f0caca;
+  background: var(--ui-danger-soft);
+  color: var(--ui-danger);
+}
+
+html[data-ui-theme="blue"] :is(.status-pill.is-running, .manual-pipeline-badge.running) {
+  background: var(--ui-warning-soft);
+  color: var(--ui-warning);
+}
+
+/* 技能库 */
+html[data-ui-theme="blue"] :is(.installed-skill-item, .skill-result-item, .skill-info-strip, .skill-detail-meta, .skill-markdown-editor, .skill-empty) {
+  border-color: var(--ui-line);
+  background: var(--ui-surface-soft);
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] :is(.installed-skill-item.active, .skill-result-item.active) {
+  background: var(--ui-surface-active);
+  outline-color: var(--ui-focus);
+}
+
+html[data-ui-theme="blue"] :is(.installed-skill-item strong, .skill-result-item strong) {
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] :is(.installed-skill-item span, .installed-skill-item small, .skill-result-item small, .skill-page-heading p) {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] :is(.skill-star-line, .skill-result-item em) {
+  color: var(--ui-accent-ink) !important;
+}
+
+html[data-ui-theme="blue"] .skill-result-item:hover {
+  background: var(--ui-surface-active);
+  box-shadow: none;
+  transform: none;
+}
+
+html[data-ui-theme="blue"] :is(.skill-editor-panel .panel-header, .skill-detail-meta, .skill-save-row) {
+  border-color: var(--ui-line);
+}
+
+/* Skill Star 统计：列表圆环与 Teleport 浮层统一接入蓝白主题。 */
+html[data-ui-theme="blue"] .skill-local-line {
+  color: var(--ui-text-muted) !important;
+}
+
+html[data-ui-theme="blue"] .star-stat-trigger:hover,
+html[data-ui-theme="blue"] .star-stat-trigger:focus-visible {
+  background: var(--ui-surface-active);
+}
+
+html[data-ui-theme="blue"] .star-ring {
+  background:
+    radial-gradient(circle at center, var(--ui-surface-soft) 49%, transparent 51%),
+    conic-gradient(var(--ui-accent) var(--star-ring-percent, 0%), var(--ui-line) 0);
+  box-shadow: 0 0 0 1px var(--ui-focus);
+}
+
+html[data-ui-theme="blue"] .star-stat-trigger.empty .star-ring {
+  background:
+    radial-gradient(circle at center, var(--ui-surface-soft) 49%, transparent 51%),
+    conic-gradient(var(--ui-line-strong) 8%, var(--ui-line) 0);
+}
+
+html[data-ui-theme="blue"] body .skill-star-popover {
+  border-color: var(--ui-line-strong);
+  background: var(--ui-surface);
+  box-shadow: 0 18px 44px rgba(18, 43, 78, 0.2);
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] body .skill-star-popover-heading {
+  border-color: var(--ui-line);
+  background: linear-gradient(135deg, var(--ui-surface-active), var(--ui-surface));
+}
+
+html[data-ui-theme="blue"] body .skill-star-popover-heading p {
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .skill-star-popover-heading strong {
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] body .skill-star-popover-heading > span,
+html[data-ui-theme="blue"] body .skill-star-popover-ring small,
+html[data-ui-theme="blue"] body .skill-star-metrics small {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] body .skill-star-popover-ring {
+  background:
+    radial-gradient(circle at center, var(--ui-surface) 58%, transparent 59%),
+    conic-gradient(var(--ui-accent) var(--star-ring-percent, 0%), var(--ui-line) 0);
+}
+
+html[data-ui-theme="blue"] body .skill-star-popover-ring.empty {
+  background:
+    radial-gradient(circle at center, var(--ui-surface) 58%, transparent 59%),
+    conic-gradient(var(--ui-line-strong) 8%, var(--ui-line) 0);
+}
+
+html[data-ui-theme="blue"] body .skill-star-popover-ring strong,
+html[data-ui-theme="blue"] body .skill-star-metrics strong:not(.negative) {
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .skill-star-popover-note {
+  border-color: var(--ui-line);
+  background: var(--ui-surface-soft);
+  color: var(--ui-text-muted);
+}
+
+/* 求职对话页 */
+html[data-ui-theme="blue"] .career-workspace {
+  gap: 12px;
+}
+
+html[data-ui-theme="blue"] :is(.career-history-panel, .career-chat-panel) {
+  border-color: var(--ui-line);
+  border-radius: 12px;
+  background: var(--ui-surface);
+  box-shadow: none;
+}
+
+html[data-ui-theme="blue"] :is(.chat-header, .model-settings, .composer, .composer-toolbar) {
+  border-color: var(--ui-line);
+}
+
+html[data-ui-theme="blue"] .model-settings {
+  background: var(--ui-surface-soft);
+}
+
+html[data-ui-theme="blue"] :is(.chat-header h2, .model-settings h3, .empty-state h2, .message p, .agent-message p) {
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] :is(.history-title, .list-empty, .model-settings p:not(.eyebrow), .empty-state > p:not(.eyebrow), .composer-footer > small) {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] .history-title small {
+  border-radius: 7px;
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] .conversation-item {
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] .conversation-item.active {
+  border-color: var(--ui-line-strong);
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] :is(.quiet-button, .chip-button, .model-manager-button) {
+  border-color: var(--ui-line);
+  border-radius: 8px;
+  background: var(--ui-surface);
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] :is(.agent-message, .message.from-agent) {
+  border-color: var(--ui-line);
+  border-left-color: var(--ui-accent);
+  background: var(--ui-surface);
+}
+
+html[data-ui-theme="blue"] .message.from-user {
+  background: var(--ui-surface-active);
+}
+
+html[data-ui-theme="blue"] :is(.message-role strong, .stream-pending-heading) {
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] :is(.tag-row span, .chip-button.active, .interview-reference-chip) {
+  border-color: var(--ui-line-strong);
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] :is(.composer, .interview-mention-menu, .interview-mention-menu button) {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+}
+
+/* 简历助手 */
+html[data-ui-theme="blue"] .resume-assistant {
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] :is(
+  .resume-card,
+  .resume-search,
+  .resume-record-card,
+  .resume-editor-card,
+  .resume-result-card,
+  .resume-empty,
+  .resume-upload-card
+) {
+  border-color: var(--ui-line);
+  border-radius: 12px;
+  background: var(--ui-surface);
+  box-shadow: none;
+}
+
+html[data-ui-theme="blue"] .resume-assistant :is(h2, h3, strong) {
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] .resume-assistant :is(p, small, label > span) {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] .resume-assistant :is(.status-badge, .resume-meta span) {
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+/* 面经库 */
+html[data-ui-theme="blue"] .interview-library-shell {
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] :is(
+  .interview-tree-pane,
+  .interview-detail-pane,
+  .interview-list-pane,
+  .library-card,
+  .experience-card,
+  .editor-canvas,
+  .import-dialog,
+  .collection-dialog,
+  .collection-section,
+  .candidate-card
+) {
+  border-color: var(--ui-line);
+  border-radius: 12px;
+  background: var(--ui-surface);
+  box-shadow: none;
+}
+
+html[data-ui-theme="blue"] .interview-library-shell :is(h2, h3, strong) {
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] .interview-library-shell :is(p, small, .library-description) {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] :is(.quiet-action, .close-button, .tree-node, .platform-card) {
+  border-color: var(--ui-line);
+  border-radius: 8px;
+  background: var(--ui-surface);
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] .interview-library-shell .danger-action {
+  border-color: color-mix(in srgb, var(--ui-danger) 34%, white);
+  background: var(--ui-danger-soft);
+  color: var(--ui-danger);
+}
+
+html[data-ui-theme="blue"] .interview-library-shell .library-notice {
+  border-color: var(--ui-line-strong);
+  background: var(--ui-accent-soft);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] :is(.tree-node.active, .platform-card.active, .platform-card:hover, .import-tabs button.active) {
+  border-color: var(--ui-line-strong);
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] :is(.tree-pane-header, .experience-context-strip, .import-dialog > header, .collection-dialog-header, .import-tabs) {
+  border-color: var(--ui-line);
+}
+
+html[data-ui-theme="blue"] .library-header {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow);
+}
+
+html[data-ui-theme="blue"] .library-heading-mark {
+  background: var(--ui-surface-active);
+  color: var(--ui-accent);
+}
+
+html[data-ui-theme="blue"] .library-actions .quiet-action {
+  border-color: var(--ui-line);
+  background: var(--ui-surface-soft);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] :is(.experience-context-strip, .collection-tabs, .collection-form, .collection-section, .candidate-markdown, .editor-support-panel) {
+  background: var(--ui-surface-soft);
+}
+
+html[data-ui-theme="blue"] :is(.progress-track i, .collection-progress-line i) {
+  background: var(--ui-accent);
+  box-shadow: none;
+}
+
+/* 管理台、监控页与通用明细 */
+html[data-ui-theme="blue"] :is(.observability-heading p, .admin-console-heading p, .manual-pipeline-heading p, .admin-card-heading > span) {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] :is(.pipeline-log-dialog, .pipeline-log-header, .pipeline-task-track article) {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+}
+
+html[data-ui-theme="blue"] :is(.pipeline-log-header h2, .pipeline-log-section-title, .pipeline-task-track article strong) {
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] :is(.pipeline-log-header p, .pipeline-task-track article span, .pipeline-log-waiting) {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] .pipeline-log-button {
+  border-color: var(--ui-line-strong);
+  background: var(--ui-surface);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] :is(.admin-card-heading > div > p, .admin-route-copy p, .admin-route-footer p) {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] :is(.admin-route-state, .admin-route-list, .admin-route-item, .admin-route-footer) {
+  border-color: var(--ui-line);
+}
+
+html[data-ui-theme="blue"] .admin-route-item {
+  background: var(--ui-surface);
+}
+
+html[data-ui-theme="blue"] .admin-route-item:hover {
+  background: var(--ui-surface-soft);
+}
+
+html[data-ui-theme="blue"] :is(.admin-route-copy strong, .admin-route-copy code) {
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] .admin-route-index,
+html[data-ui-theme="blue"] .admin-route-switch em {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] .admin-route-copy > div span {
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] .admin-route-copy > div span.locked {
+  background: var(--ui-surface-soft);
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] .admin-route-switch > span {
+  background: #cbd9eb;
+}
+
+html[data-ui-theme="blue"] .admin-route-switch input:checked + span {
+  background: var(--ui-accent);
+}
+
+html[data-ui-theme="blue"] .admin-route-switch input:focus-visible + span {
+  outline-color: var(--ui-accent);
+}
+
+html[data-ui-theme="blue"] :is(.observability-console-mark, .github-snapshot-bar, .admin-config-footer, .manual-snapshot-summary) {
+  border-color: var(--ui-line);
+  border-radius: 9px;
+  background: var(--ui-surface-soft);
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] .observability-console-mark {
+  background: var(--ui-surface-active);
+  color: var(--ui-accent);
+}
+
+/* 评测中心保留“证据链”结构，但将实验账本的绿色语义统一为蓝色。 */
+html[data-ui-theme="blue"] .evaluation-page {
+  --eval-ink: var(--ui-text);
+  --eval-pine: var(--ui-accent-ink);
+  --eval-moss: var(--ui-accent-mid);
+  --eval-copper: #9a650d;
+  --eval-paper: var(--ui-surface);
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] :is(.evaluation-heading h2, .evaluation-panel h3, .evaluation-section-heading h3, .evaluation-case-form h3, .evaluation-experiment-detail h3) {
+  color: var(--ui-text);
+  font-family: var(--ui-font-display);
+}
+
+html[data-ui-theme="blue"] :is(.evaluation-heading > div > p:last-child, .evaluation-section-heading p, .evaluation-empty) {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] .evaluation-tabs {
+  border-color: var(--ui-line);
+  border-radius: 10px;
+  background: var(--ui-surface-soft);
+}
+
+html[data-ui-theme="blue"] .evaluation-tabs button {
+  border-radius: 7px;
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] .evaluation-tabs button.active {
+  background: var(--ui-surface);
+  color: var(--ui-accent-ink);
+  box-shadow: 0 1px 4px rgba(23, 34, 59, 0.08);
+}
+
+html[data-ui-theme="blue"] .evaluation-chain {
+  border: 1px solid #26385f;
+  border-radius: 12px;
+  background: var(--ui-text);
+  box-shadow: none;
+}
+
+html[data-ui-theme="blue"] .evaluation-chain article span {
+  color: #a9b9d5;
+}
+
+html[data-ui-theme="blue"] .evaluation-chain article strong {
+  color: #ffffff;
+}
+
+html[data-ui-theme="blue"] .evaluation-chain article small {
+  color: #bac7dc;
+}
+
+html[data-ui-theme="blue"] .evaluation-chain > i {
+  color: #7892c0;
+}
+
+html[data-ui-theme="blue"] :is(
+  .evaluation-panel,
+  .evaluation-dataset-list > article,
+  .evaluation-case-form,
+  .evaluation-experiment-detail,
+  .evaluation-metric-dictionary article,
+  .evaluation-form,
+  .evaluation-state
+) {
+  border-color: var(--ui-line);
+  border-radius: 12px;
+  background: var(--ui-surface);
+  box-shadow: none;
+}
+
+html[data-ui-theme="blue"] :is(.evaluation-experiment-list > button, .evaluation-inline-form, .evaluation-metric-results > div) {
+  border-color: var(--ui-line);
+  background: var(--ui-surface-soft);
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] :is(.evaluation-experiment-list > button:hover, .evaluation-experiment-list > button.active) {
+  border-color: var(--ui-line-strong);
+  background: var(--ui-surface-active);
+}
+
+html[data-ui-theme="blue"] :is(.evaluation-source-bars div > div, .evaluation-experiment-detail header code, .evaluation-run-state) {
+  background: var(--ui-surface-soft);
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] .evaluation-source-bars i {
+  background: var(--ui-accent);
+}
+
+html[data-ui-theme="blue"] :is(.evaluation-section-heading, .evaluation-inline-form, .evaluation-version-list, .evaluation-version-list > div + div, .evaluation-run-table, .evaluation-run-table > div + div) {
+  border-color: var(--ui-line);
+}
+
+html[data-ui-theme="blue"] :is(
+  .evaluation-actions > button:not(.secondary-button),
+  .evaluation-section-heading > button,
+  .evaluation-form button[type="submit"],
+  .evaluation-inline-form button[type="submit"]
+) {
+  border: 1px solid var(--ui-accent);
+  border-radius: 9px;
+  background: var(--ui-accent);
+  color: #ffffff;
+  padding: 9px 13px;
+  font-weight: 800;
+}
+
+html[data-ui-theme="blue"] .evaluation-page .text-button {
+  color: var(--ui-accent-ink) !important;
+}
+
+html[data-ui-theme="blue"] :is(.detail-toolbar, .panel-header, .skill-save-row) {
+  border-color: var(--ui-line);
+}
+
+html[data-ui-theme="blue"] :is(.media-card, .task-card, .scene-card, .execution-history-item, .pending-video-card, .prompt-list article) {
+  border-color: var(--ui-line);
+  border-radius: 10px;
+  background: var(--ui-surface-soft);
+  box-shadow: none;
+}
+
+html[data-ui-theme="blue"] :is(.media-card, .execution-history-item, .task-card):hover {
+  transform: none;
+  border-color: var(--ui-line-strong);
+  box-shadow: none;
+}
+
+/* 历史归档：普通归档状态和原文入口使用主题蓝，避免继承旧版浅绿色。 */
+html[data-ui-theme="blue"] .execution-history-header > div > p:last-child,
+html[data-ui-theme="blue"] .execution-history-item > p,
+html[data-ui-theme="blue"] .history-item-footer,
+html[data-ui-theme="blue"] .history-item-time {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] .execution-history-item h3 {
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] .history-content-id,
+html[data-ui-theme="blue"] .history-item-footer strong,
+html[data-ui-theme="blue"] .history-item-footer em {
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] .execution-history-item .status-pill.is-success {
+  border: 1px solid var(--ui-line-strong);
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] .execution-history-item .status-pill.is-muted {
+  border: 1px solid var(--ui-line);
+  background: var(--ui-surface-soft);
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] .archive-article-entry {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow);
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] .archive-article-entry:hover,
+html[data-ui-theme="blue"] .archive-article-entry:focus-visible {
+  border-color: var(--ui-line-strong);
+  box-shadow: 0 14px 34px rgba(24, 62, 112, 0.09);
+}
+
+html[data-ui-theme="blue"] .archive-article-entry-label,
+html[data-ui-theme="blue"] .archive-article-entry-heading > span,
+html[data-ui-theme="blue"] .archive-article-entry-preview > span,
+html[data-ui-theme="blue"] .archive-article-entry-footer strong {
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] .archive-article-entry-heading > span {
+  background: var(--ui-surface-active);
+}
+
+html[data-ui-theme="blue"] .archive-article-entry-heading h2,
+html[data-ui-theme="blue"] .wechat-article-header h2 {
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] .archive-article-entry-heading p,
+html[data-ui-theme="blue"] .archive-article-entry-preview strong {
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] .archive-article-entry-preview,
+html[data-ui-theme="blue"] .wechat-article-header,
+html[data-ui-theme="blue"] .article-body {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+}
+
+html[data-ui-theme="blue"] .archive-article-entry-preview {
+  background: linear-gradient(145deg, #f8fbff 0%, var(--ui-surface-soft) 100%);
+}
+
+html[data-ui-theme="blue"] .archive-article-entry-preview p,
+html[data-ui-theme="blue"] .archive-article-entry-footer,
+html[data-ui-theme="blue"] .wechat-article-header > span,
+html[data-ui-theme="blue"] .wechat-article-header small {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] .archive-article-entry-preview i {
+  background: var(--ui-line);
+}
+
+html[data-ui-theme="blue"] .article-body pre {
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] .lifecycle-panel {
+  --lifecycle-active: var(--ui-success);
+  --lifecycle-line: var(--ui-line-strong);
+  --lifecycle-muted: var(--ui-text-muted);
+  border-color: var(--ui-line);
+  background: var(--ui-surface-soft);
+}
+
+html[data-ui-theme="blue"] :is(.lifecycle-heading h3, .task-detail-heading h3) {
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] :is(.lifecycle-heading p, .task-detail-heading p, .lifecycle-copy span, .lifecycle-copy small) {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] :is(.lifecycle-heading > span, .task-detail-heading > span) {
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] .task-detail-heading {
+  border-color: var(--ui-line);
+}
+
+/* 工作台卡片内部预览：只把主线操作染为核心蓝，其余使用雾蓝与蓝灰。 */
+html[data-ui-theme="blue"] body .module-card-header > span {
+  background: var(--ui-surface-soft);
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] body .module-card :is(.mini-preview, .preview-article, .preview-archive) {
+  border-color: var(--ui-line);
+  background: var(--ui-surface-soft);
+  box-shadow: none;
+}
+
+html[data-ui-theme="blue"] body .module-card .preview-article {
+  background: linear-gradient(145deg, #f8fbff 0%, #eef5fd 100%);
+}
+
+html[data-ui-theme="blue"] body .module-card :is(.article-mini-kicker, .article-node) {
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .module-card .article-mini-copy strong,
+html[data-ui-theme="blue"] body .module-card .mini-history-copy strong,
+html[data-ui-theme="blue"] body .module-card .mini-prompt-explained strong,
+html[data-ui-theme="blue"] body .module-card .mini-task {
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] body .module-card :is(.article-mini-copy p, .mini-asset-summary, .mini-history-copy small, .mini-prompt-explained small) {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] body .module-card .preview-article span {
+  background: #d8e6f7;
+}
+
+html[data-ui-theme="blue"] body .module-card :is(.mini-task, .mini-prompt-explained) {
+  background: #f2f7fd;
+}
+
+html[data-ui-theme="blue"] body .module-card .mini-task-list::-webkit-scrollbar-thumb {
+  background: #c8d8ed;
+}
+
+html[data-ui-theme="blue"] body .module-card .mini-task em {
+  background: transparent;
+}
+
+html[data-ui-theme="blue"] body .module-card .mini-task em.is-success {
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .module-card .mini-task em.is-running {
+  color: var(--ui-warning);
+}
+
+html[data-ui-theme="blue"] body .module-card .mini-task em.is-danger {
+  color: var(--ui-danger);
+}
+
+html[data-ui-theme="blue"] body .module-card .mini-task em.is-muted {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] body .module-card :is(.mini-asset, .mini-asset-thumbnail, .asset-node) {
+  border-color: var(--ui-line-strong);
+  background: #f6faff;
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .module-card .preview-archive {
+  background:
+    linear-gradient(135deg, rgba(238, 245, 253, 0.94), rgba(255, 255, 255, 0.98)),
+    repeating-linear-gradient(90deg, transparent 0 30px, rgba(0, 100, 221, 0.05) 30px 31px);
+}
+
+html[data-ui-theme="blue"] body .module-card .mini-history-track i {
+  background: linear-gradient(90deg, var(--ui-accent-mid), #cbdcf1);
+}
+
+html[data-ui-theme="blue"] body .module-card .article-node {
+  border-color: var(--ui-line-strong);
+  background: var(--ui-surface-active);
+}
+
+/* 求职助手：补齐通知、空态、执行进度和模型目录里的绿色残留。 */
+html[data-ui-theme="blue"] body .career-workspace .notice.success {
+  border-color: var(--ui-line-strong);
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .career-workspace .empty-mark {
+  background: var(--ui-accent);
+}
+
+html[data-ui-theme="blue"] body .career-workspace .turn-status {
+  border: 1px solid var(--ui-line);
+  background: var(--ui-surface-soft);
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] body .career-workspace .stream-pending-heading::before {
+  border-color: #c6d9f2;
+  border-top-color: var(--ui-accent);
+}
+
+html[data-ui-theme="blue"] body .career-workspace .stream-progress-item {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] body .career-workspace .stream-progress-item i {
+  background: #c9d8ea;
+}
+
+html[data-ui-theme="blue"] body .career-workspace .stream-progress-item.running {
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .career-workspace .stream-progress-item.running i {
+  background: var(--ui-accent);
+}
+
+html[data-ui-theme="blue"] body .career-workspace .stream-progress-item.completed i {
+  background: var(--ui-accent-mid);
+}
+
+html[data-ui-theme="blue"] body .career-workspace .streamed-answer {
+  border-color: var(--ui-line);
+}
+
+html[data-ui-theme="blue"] body .career-workspace .readiness.ready {
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .career-workspace .model-profile-list article {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+  box-shadow: none;
+}
+
+/* 模型弹窗通过 Teleport 挂载到 body，不能依赖 career-workspace 父级。 */
+html[data-ui-theme="blue"] body .model-dialog-backdrop {
+  background: rgba(15, 32, 57, 0.44);
+}
+
+html[data-ui-theme="blue"] body .model-dialog {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+  box-shadow: 0 28px 80px rgba(18, 43, 78, 0.24);
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] body :is(.model-dialog-header, .provider-catalog-section) {
+  border-color: var(--ui-line);
+}
+
+html[data-ui-theme="blue"] body .model-dialog-header h2,
+html[data-ui-theme="blue"] body .model-dialog-body h3,
+html[data-ui-theme="blue"] body :is(.connection-toolbar strong, .connection-card-copy strong, .free-provider-card > header strong, .free-model-template strong) {
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] body :is(
+  .connection-toolbar small,
+  .dialog-helper,
+  .connection-card-copy small,
+  .connection-meta small,
+  .provider-picker-card small,
+  .selected-provider-banner small,
+  .connection-form-grid label > span,
+  .capability-option small,
+  .free-directory-intro p,
+  .free-provider-card > header small,
+  .free-provider-card > p,
+  .free-model-template code,
+  .free-model-template-meta small
+) {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] body :is(.dialog-close-button, .dialog-secondary-button, .back-button) {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+  color: var(--ui-text-secondary);
+  box-shadow: none;
+}
+
+html[data-ui-theme="blue"] body :is(.dialog-close-button, .dialog-secondary-button, .back-button):hover:not(:disabled) {
+  border-color: var(--ui-line-strong);
+  background: var(--ui-surface-soft);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .dialog-primary-button {
+  border-color: var(--ui-accent);
+  background: var(--ui-accent);
+  color: #ffffff;
+  box-shadow: none;
+}
+
+html[data-ui-theme="blue"] body .dialog-primary-button:hover:not(:disabled) {
+  background: var(--ui-accent-hover);
+}
+
+html[data-ui-theme="blue"] body .model-dialog-footer {
+  border-color: var(--ui-line);
+  background: var(--ui-surface-soft);
+}
+
+html[data-ui-theme="blue"] body .model-dialog-body {
+  scrollbar-color: var(--ui-line-strong) transparent;
+}
+
+html[data-ui-theme="blue"] body .model-dialog-body::-webkit-scrollbar-thumb {
+  background: var(--ui-line-strong);
+}
+
+html[data-ui-theme="blue"] body .connection-card {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] body .connection-card:hover {
+  transform: none;
+  border-color: var(--ui-line-strong);
+  background: var(--ui-surface-soft);
+}
+
+html[data-ui-theme="blue"] body .connection-drag {
+  color: var(--ui-line-strong);
+}
+
+html[data-ui-theme="blue"] body .provider-avatar {
+  border-color: var(--ui-line);
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .connection-empty-state {
+  border-color: var(--ui-line-strong);
+  background: var(--ui-surface-soft);
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] body .connection-empty-state > span {
+  color: var(--ui-accent-mid);
+}
+
+html[data-ui-theme="blue"] body .connection-empty-state strong {
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] body .provider-picker-card {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  box-shadow: none;
+}
+
+html[data-ui-theme="blue"] body .provider-picker-card:hover {
+  border-color: var(--ui-line-strong);
+  box-shadow: none;
+}
+
+html[data-ui-theme="blue"] body .provider-picker-card.selected {
+  border-color: var(--ui-accent-mid);
+  background: var(--ui-surface-active);
+  box-shadow: 0 0 0 3px var(--ui-focus);
+}
+
+html[data-ui-theme="blue"] body .provider-picker-card em,
+html[data-ui-theme="blue"] body .selected-provider-banner > span:last-child,
+html[data-ui-theme="blue"] body .free-directory-intro > strong {
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .selected-provider-banner {
+  border-color: var(--ui-line);
+  background: var(--ui-surface-soft);
+}
+
+html[data-ui-theme="blue"] body :is(.connection-form-grid label, .capability-fieldset legend, .capability-option strong) {
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] body :is(.connection-form-grid input, .connection-form-grid select) {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] body :is(.connection-form-grid input, .connection-form-grid select):focus {
+  border-color: var(--ui-accent);
+  box-shadow: 0 0 0 3px var(--ui-focus);
+}
+
+html[data-ui-theme="blue"] body .capability-option {
+  border-color: var(--ui-line);
+  background: var(--ui-surface-soft);
+}
+
+html[data-ui-theme="blue"] body .capability-option input {
+  accent-color: var(--ui-accent);
+}
+
+html[data-ui-theme="blue"] body .connection-test-success {
+  border-color: var(--ui-line-strong);
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .readiness.ready,
+html[data-ui-theme="blue"] body .catalog-readiness.ready {
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .free-model-directory {
+  background: var(--ui-surface);
+}
+
+html[data-ui-theme="blue"] body .free-directory-intro {
+  border-color: var(--ui-line);
+}
+
+html[data-ui-theme="blue"] body :is(.free-provider-card, .free-model-template) {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+  box-shadow: none;
+}
+
+html[data-ui-theme="blue"] body .catalog-access-summary.ready {
+  border-left-color: var(--ui-accent-mid);
+  background: var(--ui-surface-soft);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .free-model-template button {
+  border-color: var(--ui-line-strong);
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .free-model-template button:hover {
+  border-color: var(--ui-accent-mid);
+  background: var(--ui-accent);
+  color: #ffffff;
+}
+
+html[data-ui-theme="blue"] body .free-provider-card > footer a,
+html[data-ui-theme="blue"] body .free-model-template-meta a,
+html[data-ui-theme="blue"] body .test-connection-button {
+  color: var(--ui-accent-ink);
+}
+
+/* 面经库：阅读区、树形索引和可检索状态使用同一套派生蓝阶。 */
+html[data-ui-theme="blue"] body .interview-library-shell :is(.tree-refresh, .tree-search) {
+  border-color: var(--ui-line);
+  background: var(--ui-surface-soft);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .tree-search input {
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .company-tree details,
+html[data-ui-theme="blue"] body .interview-library-shell .tree-leaves {
+  border-color: var(--ui-line);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell :is(.tree-company-mark, .experience-meta a) {
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .company-tree summary em {
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .tree-leaf {
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .tree-leaf:hover {
+  background: var(--ui-surface-soft);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .tree-leaf.active {
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell :is(.leaf-line, .status-indexed) {
+  background: var(--ui-accent-mid);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell :is(
+  .empty-index-mark,
+  .index-status:not(.index-failed):not(.index-parsing):not(.index-indexing),
+  .tag-list span
+) {
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell :is(.experience-header, .experience-context-strip) {
+  border-color: var(--ui-line);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .experience-context-strip {
+  background: var(--ui-surface-soft);
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .summary-note {
+  border-color: var(--ui-line-strong);
+  border-left-color: var(--ui-accent);
+  background: linear-gradient(90deg, #edf5ff, #f8fbff);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .summary-note p {
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .summary-note strong {
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .markdown-reading {
+  border-color: var(--ui-line);
+  box-shadow: 0 12px 32px rgba(24, 62, 112, 0.05);
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .reading-heading {
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .markdown-reading h2 {
+  border-color: var(--ui-line);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .markdown-reading h3 {
+  border-left-color: var(--ui-accent-mid);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .markdown-reading h4,
+html[data-ui-theme="blue"] body .interview-library-shell .reading-ordered li::marker {
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell :is(.reading-paragraph, .reading-list) {
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .reading-divider {
+  background: linear-gradient(90deg, var(--ui-line-strong), var(--ui-line) 70%, transparent);
+}
+
+/* 面经编辑器：归属字段、正文与辅助信息统一使用蓝白主题。 */
+html[data-ui-theme="blue"] body .interview-library-shell .editor-identity-panel {
+  border-color: var(--ui-line);
+  background: var(--ui-surface-soft);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .editor-field {
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell :is(
+  .editor-field input,
+  .editor-canvas textarea
+) {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell :is(
+  .editor-field input,
+  .editor-canvas textarea
+):focus {
+  border-color: var(--ui-line-strong);
+  box-shadow: 0 0 0 3px var(--ui-focus);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .editor-canvas {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+  box-shadow: 0 12px 32px rgba(24, 62, 112, 0.05);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .editor-canvas > span {
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .editor-canvas > span em {
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .editor-support-panel {
+  border-color: var(--ui-line);
+  background: var(--ui-surface-soft);
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .editor-support-panel summary {
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .editor-support-panel summary span {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] body .interview-library-shell .editor-support-fields {
+  border-color: var(--ui-line);
+}
+
+/* 面经文件导入弹窗：上传、解析与确认阶段统一使用蓝白主题。 */
+html[data-ui-theme="blue"] body .import-backdrop {
+  background: rgba(15, 32, 57, 0.44);
+}
+
+html[data-ui-theme="blue"] body .import-dialog {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+  box-shadow: 0 28px 80px rgba(18, 43, 78, 0.24);
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] body .import-dialog > header,
+html[data-ui-theme="blue"] body .import-tabs {
+  border-color: var(--ui-line);
+}
+
+html[data-ui-theme="blue"] body .import-dialog h2 {
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] body .import-dialog .library-kicker {
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .import-dialog header p:not(.library-kicker),
+html[data-ui-theme="blue"] body .file-intake-intro p,
+html[data-ui-theme="blue"] body .file-import-strategy p,
+html[data-ui-theme="blue"] body .recognition-card p,
+html[data-ui-theme="blue"] body .file-parse-progress-card p,
+html[data-ui-theme="blue"] body .file-progress-context,
+html[data-ui-theme="blue"] body .file-progress-list em {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] body .import-tabs button {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] body .import-tabs button.active {
+  border-bottom-color: var(--ui-accent);
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .import-form label,
+html[data-ui-theme="blue"] body .file-import-strategy legend,
+html[data-ui-theme="blue"] body .file-import-strategy label {
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] body .import-form input,
+html[data-ui-theme="blue"] body .import-form textarea {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] body .import-form input:focus,
+html[data-ui-theme="blue"] body .import-form textarea:focus {
+  border-color: var(--ui-accent);
+  box-shadow: 0 0 0 3px var(--ui-focus);
+  outline: 0;
+}
+
+html[data-ui-theme="blue"] body .file-intake-intro {
+  border-left-color: var(--ui-accent);
+  background: var(--ui-surface-active);
+}
+
+html[data-ui-theme="blue"] body .file-intake-intro strong,
+html[data-ui-theme="blue"] body .file-picker span,
+html[data-ui-theme="blue"] body .recognition-card strong,
+html[data-ui-theme="blue"] body .progress-heading strong {
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .file-picker {
+  border-color: var(--ui-accent-mid);
+  background: var(--ui-surface-soft);
+}
+
+html[data-ui-theme="blue"] body .file-picker:hover {
+  border-color: var(--ui-accent);
+  background: var(--ui-surface-active);
+}
+
+html[data-ui-theme="blue"] body .file-import-strategy,
+html[data-ui-theme="blue"] body .recognition-card {
+  border-color: var(--ui-line);
+  background: var(--ui-surface-soft);
+}
+
+html[data-ui-theme="blue"] body .file-import-strategy input {
+  accent-color: var(--ui-accent);
+}
+
+html[data-ui-theme="blue"] body .recognition-card span {
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .file-parse-overlay {
+  background: color-mix(in srgb, var(--ui-surface) 80%, transparent);
+}
+
+html[data-ui-theme="blue"] body .file-parse-progress-card {
+  border-color: var(--ui-line-strong);
+  background: color-mix(in srgb, var(--ui-surface) 96%, transparent);
+  box-shadow: 0 18px 48px rgba(18, 43, 78, 0.18);
+}
+
+html[data-ui-theme="blue"] body .progress-heading,
+html[data-ui-theme="blue"] body .progress-phase,
+html[data-ui-theme="blue"] body .file-progress-context strong,
+html[data-ui-theme="blue"] body .file-progress-list strong {
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] body .progress-track {
+  background: var(--ui-line);
+}
+
+html[data-ui-theme="blue"] body .progress-track i {
+  background: linear-gradient(90deg, var(--ui-accent), var(--ui-accent-mid));
+  box-shadow: 0 0 14px var(--ui-focus);
+}
+
+html[data-ui-theme="blue"] body .file-progress-list li {
+  background: var(--ui-surface-soft);
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] body .file-progress-list li > span,
+html[data-ui-theme="blue"] body .file-progress-list .is-completed > span {
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .file-progress-list .is-parsing {
+  background: var(--ui-surface-active);
+}
+
+/* 面经采集弹窗：Teleport 到 body 后仍完整继承蓝白主题，避免组件默认绿色泄漏。 */
+html[data-ui-theme="blue"] body .collection-backdrop {
+  background: rgba(15, 32, 57, 0.44);
+}
+
+html[data-ui-theme="blue"] body .collection-dialog {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+  box-shadow: 0 28px 80px rgba(18, 43, 78, 0.24);
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] body .collection-dialog-header,
+html[data-ui-theme="blue"] body .collection-tabs {
+  border-color: var(--ui-line);
+}
+
+html[data-ui-theme="blue"] body .collection-dialog-header h2,
+html[data-ui-theme="blue"] body .collection-section h3,
+html[data-ui-theme="blue"] body .candidate-card h3,
+html[data-ui-theme="blue"] body .candidate-list-header h3 {
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] body .collection-dialog .library-kicker,
+html[data-ui-theme="blue"] body .collection-dialog .section-label {
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .collection-dialog-header p:not(.library-kicker),
+html[data-ui-theme="blue"] body .collection-section-heading p,
+html[data-ui-theme="blue"] body .candidate-list-header > span,
+html[data-ui-theme="blue"] body .candidate-evidence {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] body .collection-tabs,
+html[data-ui-theme="blue"] body .collection-form {
+  background: var(--ui-surface-soft);
+}
+
+html[data-ui-theme="blue"] body .collection-tabs button {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] body .collection-tabs button.active {
+  border-bottom-color: var(--ui-accent);
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .dialog-success {
+  border: 1px solid var(--ui-line-strong);
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .collection-section,
+html[data-ui-theme="blue"] body .candidate-card {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+}
+
+html[data-ui-theme="blue"] body .xiaohongshu-source-section {
+  background: linear-gradient(135deg, var(--ui-surface) 0%, var(--ui-surface-soft) 100%);
+}
+
+html[data-ui-theme="blue"] body .collection-loading {
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .collection-field,
+html[data-ui-theme="blue"] body .candidate-meta-grid label,
+html[data-ui-theme="blue"] body .candidate-import-meta label,
+html[data-ui-theme="blue"] body .candidate-extra-fields label,
+html[data-ui-theme="blue"] body .candidate-body-field {
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] body .collection-field input,
+html[data-ui-theme="blue"] body .candidate-meta-grid input,
+html[data-ui-theme="blue"] body .candidate-import-meta input,
+html[data-ui-theme="blue"] body .candidate-extra-fields input,
+html[data-ui-theme="blue"] body .candidate-body-field textarea {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] body .collection-field input:focus,
+html[data-ui-theme="blue"] body .candidate-meta-grid input:focus,
+html[data-ui-theme="blue"] body .candidate-import-meta input:focus,
+html[data-ui-theme="blue"] body .candidate-extra-fields input:focus,
+html[data-ui-theme="blue"] body .candidate-body-field textarea:focus {
+  border-color: var(--ui-accent);
+  box-shadow: 0 0 0 3px var(--ui-focus);
+  outline: 0;
+}
+
+html[data-ui-theme="blue"] body .collection-option-toggle {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+}
+
+html[data-ui-theme="blue"] body .collection-option-toggle input {
+  accent-color: var(--ui-accent);
+}
+
+html[data-ui-theme="blue"] body .collection-option-toggle strong {
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] body .collection-option-toggle small {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] body .collection-human-review-note {
+  border-color: var(--ui-line);
+  border-left-color: var(--ui-accent);
+  background: var(--ui-surface-soft);
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] body .xiaohongshu-job-card {
+  border-color: var(--ui-line-strong);
+  background: color-mix(in srgb, var(--ui-surface) 96%, var(--ui-surface-active));
+  box-shadow: 0 10px 22px rgba(33, 75, 128, 0.08);
+}
+
+html[data-ui-theme="blue"] body .collection-job-card span,
+html[data-ui-theme="blue"] body .collection-job-card p {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] body .collection-job-card strong {
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .collection-job-heading em {
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .collection-stage-track span {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] body .collection-stage-track i {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] body .collection-stage-track span.active {
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .collection-stage-track span.active i {
+  border-color: var(--ui-accent-mid);
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .collection-stage-track span.current i {
+  box-shadow: 0 0 0 4px var(--ui-focus);
+}
+
+html[data-ui-theme="blue"] body .collection-progress-line {
+  background: var(--ui-line);
+}
+
+html[data-ui-theme="blue"] body .collection-progress-line i {
+  background: linear-gradient(90deg, var(--ui-accent), var(--ui-accent-mid));
+}
+
+html[data-ui-theme="blue"] body .collection-summary-grid > div {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+}
+
+html[data-ui-theme="blue"] body .collection-summary-grid span {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] body .collection-summary-grid strong {
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .candidate-card a,
+html[data-ui-theme="blue"] body .candidate-review-heading strong {
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .candidate-excerpt {
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] body .candidate-markdown,
+html[data-ui-theme="blue"] body .candidate-extra-fields {
+  border-color: var(--ui-line);
+  background: var(--ui-surface-soft);
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] body .candidate-markdown pre,
+html[data-ui-theme="blue"] body .candidate-review {
+  border-color: var(--ui-line);
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] body .candidate-card header > .candidate-status.is-valid,
+html[data-ui-theme="blue"] body .candidate-card header > .candidate-status.is-imported,
+html[data-ui-theme="blue"] body .candidate-status.is-valid,
+html[data-ui-theme="blue"] body .candidate-status.is-imported,
+html[data-ui-theme="blue"] body .candidate-analysis-meta span,
+html[data-ui-theme="blue"] body .candidate-review-heading em {
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] body .collection-waiting-card {
+  border-color: var(--ui-line-strong);
+  background: var(--ui-surface-soft);
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] body .collection-waiting-card strong {
+  color: var(--ui-text-secondary);
+}
+
+/* 登录页以求职轨道为唯一视觉记忆点，认证区继续保持克制。 */
+html[data-ui-theme="blue"] .login-page {
+  background: var(--ui-surface);
+}
+
+html[data-ui-theme="blue"] .login-career-panel {
+  border-right: 1px solid var(--ui-line);
+  background:
+    radial-gradient(circle at 84% 40%, rgba(0, 100, 221, 0.14), transparent 30%),
+    linear-gradient(145deg, #f7faff 0%, var(--ui-sidebar) 62%, #f9fbff 100%);
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] .login-career-grid {
+  opacity: 0.52;
+  background-image:
+    linear-gradient(rgba(71, 117, 190, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(71, 117, 190, 0.07) 1px, transparent 1px);
+}
+
+html[data-ui-theme="blue"] .login-career-brand,
+html[data-ui-theme="blue"] .login-mobile-brand,
+html[data-ui-theme="blue"] .login-career-copy h1,
+html[data-ui-theme="blue"] .login-form-heading h2 {
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] .login-brand-mark {
+  border-radius: 9px;
+  background: var(--ui-accent);
+  color: #ffffff;
+}
+
+html[data-ui-theme="blue"] .login-career-label,
+html[data-ui-theme="blue"] .login-career-copy h1 em,
+html[data-ui-theme="blue"] .login-label-row button,
+html[data-ui-theme="blue"] .login-switches button {
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] .login-career-label::before {
+  background: var(--ui-accent);
+}
+
+html[data-ui-theme="blue"] .login-career-copy > p:last-child,
+html[data-ui-theme="blue"] .login-form-heading > p:last-child,
+html[data-ui-theme="blue"] .login-form label > span,
+html[data-ui-theme="blue"] .login-form label small {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] .login-agent-track {
+  background: var(--ui-line-strong);
+}
+
+html[data-ui-theme="blue"] .login-agent-signal {
+  background: linear-gradient(90deg, var(--ui-accent), #5ba3ff);
+  box-shadow: 0 0 13px rgba(0, 100, 221, 0.3);
+}
+
+html[data-ui-theme="blue"] .login-agent-orbit {
+  border-color: var(--ui-surface);
+  background: var(--ui-accent);
+  box-shadow: 0 0 0 4px rgba(0, 100, 221, 0.12), 0 0 17px rgba(0, 100, 221, 0.46);
+}
+
+html[data-ui-theme="blue"] .login-agent-station {
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] .login-agent-number {
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] .login-agent-station strong {
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] .login-agent-node {
+  border-color: var(--ui-line-strong);
+  background: var(--ui-surface);
+  color: var(--ui-text-secondary);
+}
+
+html[data-ui-theme="blue"] .login-agent-station:first-child .login-agent-node {
+  border-color: var(--ui-accent);
+  background: var(--ui-accent);
+  box-shadow: 0 8px 20px rgba(0, 100, 221, 0.22);
+  color: #ffffff;
+}
+
+html[data-ui-theme="blue"] .login-form-panel {
+  background: var(--ui-surface);
+}
+
+html[data-ui-theme="blue"] .login-method-tabs {
+  border-color: var(--ui-line);
+  border-radius: 10px;
+  background: var(--ui-surface-soft);
+}
+
+html[data-ui-theme="blue"] .login-method-tabs button {
+  border-radius: 7px;
+  color: var(--ui-text-muted);
+}
+
+html[data-ui-theme="blue"] .login-method-tabs button.active {
+  background: var(--ui-surface);
+  box-shadow: 0 1px 4px rgba(23, 34, 59, 0.08);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] :is(.login-code-send, .login-register-entry button) {
+  border-color: var(--ui-line);
+  border-radius: 9px;
+  background: var(--ui-surface-soft);
+  color: var(--ui-accent-ink);
+}
+
+html[data-ui-theme="blue"] :is(.login-code-send, .login-register-entry button):hover:not(:disabled) {
+  border-color: var(--ui-line-strong);
+  background: var(--ui-surface-active);
+  color: var(--ui-accent-hover);
+}
+
+html[data-ui-theme="blue"] .login-form input {
+  border-color: var(--ui-line);
+  border-radius: 9px;
+  background: var(--ui-surface);
+  color: var(--ui-text);
+}
+
+html[data-ui-theme="blue"] .login-cli-bootstrap {
+  border-color: var(--ui-line);
+  background: var(--ui-surface-soft);
+  color: var(--ui-text-secondary);
+}
+
+@media (max-width: 900px) {
+  .theme-switcher.compact .theme-option span {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

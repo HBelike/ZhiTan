@@ -1,0 +1,25 @@
+services:
+  career-postgres:
+    image: pgvector/pgvector:pg16
+    container_name: wechat-agent-career-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${CAREER_POSTGRES_DB:-career_assistant}
+      POSTGRES_USER: ${CAREER_POSTGRES_USER:-career_assistant}
+      POSTGRES_PASSWORD: ${CAREER_POSTGRES_PASSWORD:-change-me-before-production}
+    ports:
+      - "127.0.0.1:${CAREER_POSTGRES_PORT:-54329}:5432"
+    volumes:
+      - career_assistant_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+volumes:
+  career_assistant_postgres_data:
+    name: wechat-agent-career-postgres-data

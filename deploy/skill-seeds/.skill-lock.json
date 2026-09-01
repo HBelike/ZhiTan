@@ -1,0 +1,27 @@
+{
+  "version": 3,
+  "description": "生产 Skill 种子的公开 GitHub 来源；仅记录已核验的仓库，不包含凭据。",
+  "skills": {
+    "ai-image-generation": {
+      "source": "skills-collective/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/skills-collective/skills.git"
+    },
+    "baoyu-url-to-markdown": {
+      "source": "JimLiu/baoyu-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/JimLiu/baoyu-skills.git"
+    },
+    "grill-me": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git"
+    },
+    "og-image-design": {
+      "source": "inference-sh/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/inference-sh/skills.git"
+    }
+  },
+  "dismissed": {}
+}

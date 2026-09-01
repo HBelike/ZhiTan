@@ -1,0 +1,30 @@
+# 求职助手 API 与独立 Agent Worker 共用生产镜像。API 容器只启动一个 Uvicorn 进程；
+# Turn 队列、SSE 事件与全局并发槽位均由 PostgreSQL 持久化，可安全独立扩展 Worker。
+FROM python:3.13-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONPATH=/app
+
+WORKDIR /app
+
+COPY requirements.txt requirements-career-assistant.txt ./
+RUN python -m pip install --upgrade pip \
+    && python -m pip install -r requirements.txt -r requirements-career-assistant.txt
+
+COPY . ./
+
+# /app/deploy/skill-seeds 随镜像发布；运行时由 root 的 skill-seed 初始化容器复制
+# 到命名卷 /app/.agents/skills，避免开发机 ~/.codex/.agents 成为生产依赖。
+RUN addgroup --system career \
+    && adduser --system --ingroup career --home /nonexistent career \
+    && mkdir -p /var/lib/career-temporary-attachments /app/data /app/outputs /app/logs /app/.agents/skills /app/deploy/skill-seeds \
+    && chown -R career:career /app /var/lib/career-temporary-attachments
+
+USER career
+EXPOSE 8012
+
+# API 不映射宿主机端口，只接受 Docker 私网中的 Caddy 转发；因此可以信任 Caddy 传入的
+# X-Forwarded-* 头，让 HTTPS 会话 Cookie 与真实客户端协议保持一致。
+CMD ["python", "-m", "uvicorn", "src.web.api:create_app", "--factory", "--host", "0.0.0.0", "--port", "8012", "--no-access-log", "--proxy-headers", "--forwarded-allow-ips=*"]

@@ -2,6 +2,12 @@
 
 ZhiTan original code is distributed under the Apache License 2.0. Third-party materials keep their own licenses and are not relicensed by the ZhiTan license.
 
+## Agent Skills
+
+The Firecrawl integration skills under `.agents/skills/firecrawl-build*` come from [firecrawl/skills](https://github.com/firecrawl/skills) and remain available under the ISC License. The complete license text is included at `.agents/skills/FIRECRAWL-LICENSE.txt`.
+
+The public repository deliberately excludes `SKILL.md` files exported from personal Codex/plugin caches. Some vendor-managed skills prohibit extraction or redistribution, while others require separate attribution. ZhiTan keeps the generic import, editing, search, and persistence code, but deployers must provide only Skill content they are licensed to use and redistribute.
+
 ## Bundled font
 
 `assets/fonts/NotoSansSC-VF.ttf` is part of the Noto CJK font family and is distributed under the SIL Open Font License 1.1. The complete license text is included at `assets/fonts/Noto-CJK-LICENSE.txt`.

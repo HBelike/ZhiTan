@@ -1,0 +1,14 @@
+# 求职助手独立依赖；不修改现有公众号工作流的 requirements.txt。
+SQLAlchemy>=2.0.36,<3.0.0
+alembic>=1.14.0,<2.0.0
+psycopg[binary]>=3.2.3,<4.0.0
+pgvector>=0.3.6,<1.0.0
+langgraph>=1.0.0,<2.0.0
+langsmith>=0.6.0,<1.0.0
+python-multipart>=0.0.20,<1.0.0
+pypdf>=5.0.0,<7.0.0
+# 与主服务的图片处理依赖保持同一主版本，避免生产镜像解析到互斥约束。
+Pillow>=12.3.0,<13.0.0
+httpx>=0.28.0,<1.0.0
+cryptography>=44.0.0,<46.0.0
+websockets>=15.0.0,<16.0.0

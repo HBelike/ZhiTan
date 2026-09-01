@@ -1,0 +1,25 @@
+name: wechat-agent-online-assessment
+
+services:
+  online-assessment-piston:
+    image: ghcr.io/engineer-man/piston@sha256:2f66b7456189c4d713aa986d98eccd0b6ee16d26c7ec5f21b30e942756fd127a
+    container_name: wechat-agent-online-assessment-piston
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - "127.0.0.1:${ONLINE_ASSESSMENT_PISTON_PORT:-2000}:2000"
+    environment:
+      PISTON_DISABLE_NETWORKING: "true"
+      PISTON_MAX_CONCURRENT_JOBS: "4"
+      PISTON_OUTPUT_MAX_SIZE: "65536"
+      PISTON_COMPILE_TIMEOUT: "10000"
+      PISTON_RUN_TIMEOUT: "3000"
+    volumes:
+      - online_assessment_piston_packages:/piston/packages
+    tmpfs:
+      - /tmp:exec
+
+volumes:
+  online_assessment_piston_packages:
+    external: true
+    name: wechat-agent-online-assessment-piston-packages

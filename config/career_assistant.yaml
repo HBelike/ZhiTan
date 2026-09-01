@@ -1,0 +1,168 @@
+career_assistant:
+  enabled: true
+  runtime:
+    max_concurrent_turns: 4
+    turn_timeout_seconds: 120
+    stream_heartbeat_seconds: 10
+
+  career_memory_worker:
+    poll_seconds: 1.0
+    lease_seconds: 120
+    worker_concurrency: 1
+
+  # 系统级单次最终正文保护上限；真实请求还会按模型最大输出能力与上下文
+  # 剩余安全空间自动收紧。修改本文件会由开发态服务自动重载。
+  response_generation:
+    max_completion_tokens: 100000
+    request_timeout_seconds: 90
+    # 仅在尚未收到正文、且服务端/网络暂时故障时重试一次。
+    # 已开始输出后绝不重放请求，避免重复回答或额外消耗额度。
+    max_attempts: 2
+    retry_backoff_seconds: 0.8
+    max_persisted_response_characters: 500000
+
+  persistence:
+    database_url_env: CAREER_DATABASE_URL
+    connect_timeout_seconds: 10
+    schema_name: career_assistant
+    pgvector_enabled: true
+
+  # 面经库始终先完成文本入库与关键词召回；向量化是显式可开关的增强层。
+  # 生产环境只有在已验证 embedding 模型与 1024 维 pgvector 索引匹配后，才将
+  # CAREER_INTERVIEW_EMBEDDING_ENABLED 设为 true。模型/地址/Key 均不写入仓库。
+  interview_library:
+    retrieval:
+      lexical_candidate_limit: 24
+      semantic_candidate_limit: 24
+      final_limit: 6
+      reciprocal_rank_fusion_k: 60
+      embedding:
+        enabled: ${CAREER_INTERVIEW_EMBEDDING_ENABLED:-false}
+        provider_key: qwen
+        model_id: ${CAREER_INTERVIEW_EMBEDDING_MODEL_ID:-}
+        api_key_env: DASHSCOPE_API_KEY
+        api_base_url_env: CAREER_INTERVIEW_EMBEDDING_BASE_URL
+        expected_dimensions: 1024
+        max_batch_size: 16
+        request_timeout_seconds: 30
+
+  privacy:
+    persist_original_attachments: false
+    persist_full_extracted_text: false
+    # 本地个人开发默认保留完整文本；生产 Compose 默认通过
+    # CAREER_REDACTION_ENABLED=true 启用脱敏。原始附件始终只在当前 Turn 临时存活。
+    redaction_enabled: ${CAREER_REDACTION_ENABLED:-false}
+    temporary_attachment_ttl_seconds: 900
+    max_attachment_size_bytes: 10485760
+
+  document_processing:
+    # Web 后端与 Docling 服务共同遵守的单份 PDF 页数上限。
+    # 90 页适用于长篇履历、作品集与岗位材料；超过该值应拆分后上传。
+    max_pdf_pages: 90
+    # Docling 作为独立服务运行，避免 OCR、版面模型占用 Web 后端进程。
+    # 本机 Docling 服务已通过匿名扫描 PDF 验证，可启用真实 OCR 与版面恢复。
+    docling_serve:
+      # 服务器未部署 GPU 文档服务时可设为 false，数字文本 PDF 仍可使用基础解析。
+      enabled: ${CAREER_DOCLING_ENABLED:-true}
+      # 本地默认访问宿主机端口；Docker Compose 部署时由
+      # CAREER_DOCLING_SERVICE_BASE_URL 覆盖为 http://career-docling:5001。
+      service_base_url: ${CAREER_DOCLING_SERVICE_BASE_URL:-http://127.0.0.1:5001}
+      api_key_env: null
+      request_timeout_seconds: 120
+      # Docling 是本地服务；仅对网络超时、429、5xx 重试一次。
+      max_attempts: 2
+      retry_backoff_seconds: 0.6
+      force_ocr: true
+      table_mode: accurate
+
+    # 图片理解是平台固定能力：先用 Docling OCR，低质量时再由此连接池复核。
+    # 这不是聊天模型配置，浏览器、模型下拉框和数据库均不会接触 API Key。
+    # 通过 active_connection_key 切换生产模型；备用模型必须显式写入
+    # fallback_connection_keys，避免在访客请求中隐式产生额外费用。
+    # 每条连接均使用 OpenAI-compatible Chat Completions 图片输入协议，因此未来
+    # 可以替换为 Gemini、OpenRouter 等兼容服务，而无需改动附件或聊天链路。
+    cloud_vision:
+      enabled: true
+      active_connection_key: aliyun-qwen-primary
+      # 视觉调用先在当前连接上做一次受控重试，再考虑下方显式配置的备用连接。
+      # 不会对鉴权、权限或格式错误重试。
+      max_attempts: 2
+      retry_backoff_seconds: 0.8
+      # 空列表表示不自动回退。模型下线或服务故障时可先在这里显式启用并加入备用项。
+      fallback_connection_keys: []
+      connections:
+        aliyun-qwen-primary:
+          enabled: true
+          provider_key: qwen
+          # qwen3-vl-flash 将于 2026-10-10 下线，官方替代为 qwen3.6-flash。
+          # 已通过本项目的真实图片理解最小调用验证。
+          model_id: qwen3.6-flash
+          api_key_env: CAREER_DOCUMENT_VISION_API_KEY
+          # 百炼新版本 API Key 使用 Workspace API Host；例如：
+          # https://{workspace_id}.cn-beijing.maas.aliyuncs.com/compatible-mode/v1。
+          api_base_url_env: CAREER_DOCUMENT_VISION_BASE_URL
+          request_timeout_seconds: 90
+          max_completion_tokens: 2500
+        aliyun-qwen-high-accuracy:
+          # 按需启用：复杂图表、长图或高风险人工复核时，可切到 qwen3.7-plus。
+          # 默认关闭，避免把高质量模型变成每张图片的常规成本。
+          enabled: false
+          provider_key: qwen
+          model_id: qwen3.7-plus
+          api_key_env: CAREER_DOCUMENT_VISION_API_KEY
+          api_base_url_env: CAREER_DOCUMENT_VISION_BASE_URL
+          request_timeout_seconds: 120
+          max_completion_tokens: 4000
+
+    # 仅服务 DOC/XLS：先在本机 Gotenberg 转为 PDF，再由 Docling 做结构化解析。
+    gotenberg:
+      # 可按服务器资源关闭旧版 Office 转换；关闭后系统会给出明确的格式提示。
+      enabled: ${CAREER_GOTENBERG_ENABLED:-true}
+      # 本地默认访问宿主机端口；Docker Compose 部署时由
+      # CAREER_GOTENBERG_SERVICE_BASE_URL 覆盖为 http://career-gotenberg:3000。
+      service_base_url: ${CAREER_GOTENBERG_SERVICE_BASE_URL:-http://127.0.0.1:3000}
+      request_timeout_seconds: 120
+      max_converted_size_bytes: 20971520
+
+  model_policy:
+    default_selection_mode: free_quota_first
+    # 生产默认关闭；本地需要使用 DeepSeek 等付费档案时由环境变量显式开启。
+    allow_paid_profiles: ${CAREER_ALLOW_PAID_PROFILES:-false}
+    enable_local_ollama_profile: false
+    fallback_on_rate_limit: true
+    fallback_on_provider_unavailable: true
+
+  model_gateway:
+    provider_credentials:
+      openai: OPENAI_API_KEY
+      gemini: GEMINI_API_KEY
+      groq: GROQ_API_KEY
+      mistral: MISTRAL_API_KEY
+      openrouter: OPENROUTER_API_KEY
+      modelscope: MODELSCOPE_API_KEY
+      baidu-qianfan: BAIDU_QIANFAN_API_KEY
+      hunyuan: HUNYUAN_API_KEY
+      qwen: DASHSCOPE_API_KEY
+      deepseek: DEEPSEEK_API_KEY
+      nvidia: NVIDIA_API_KEY
+      tokenhub: TOKENHUB_API_KEY
+      siliconflow: SILICONFLOW_API_KEY
+      zhipu: ZHIPUAI_API_KEY
+      minimax: MINIMAX_API_KEY
+      volcengine: VOLCENGINE_ARK_API_KEY
+      ollama: null
+
+  job_assessment:
+    # 岗位分析使用管理员固定模型，不跟随聊天框当前选择。
+    judge_profile_key: deepseek-deepseek-v4-flash
+    prompt_version: career-job-judge-v2
+    max_attempts: 3
+
+  online_assessment:
+    # 两项均引用管理台已有模型档案，不在此处保存模型 API Key。
+    problem_extractor_profile_key: deepseek-deepseek-v4-flash
+    answer_profile_key: deepseek-deepseek-v4-flash
+    piston_base_url: ${CAREER_PISTON_BASE_URL:-http://127.0.0.1:2000}
+    request_timeout_seconds: 12
+    max_test_cases: 20
+    max_repair_rounds: 2

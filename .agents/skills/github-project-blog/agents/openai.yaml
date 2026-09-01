@@ -1,0 +1,4 @@
+interface:
+  display_name: "GitHub 项目文章"
+  short_description: "生成有技术深度、教学感和自然表达的 GitHub 项目文章"
+  default_prompt: "Use $github-project-blog to write an evidence-grounded Chinese article about the supplied GitHub rankings."
