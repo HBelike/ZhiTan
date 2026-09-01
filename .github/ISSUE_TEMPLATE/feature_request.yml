@@ -1,0 +1,47 @@
+name: Feature request
+description: Propose an outcome or workflow improvement
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: User problem
+      description: Describe who is blocked and what they cannot accomplish today.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Proposed outcome
+      description: Describe observable behavior, not only an implementation choice.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Include existing workflows, upstream tools, or smaller changes you evaluated.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and boundaries
+      description: Note affected modules, explicit non-goals, privacy impact, and safety constraints.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Supporting evidence
+      description: Link public examples or attach sanitized mockups. Do not include private candidate data.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: I searched for existing issues and related documentation.
+          required: true
+        - label: I reviewed SAFETY.md when this request affects automation, interviews, or assessments.
+          required: true

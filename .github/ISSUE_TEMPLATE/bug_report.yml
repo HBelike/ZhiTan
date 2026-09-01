@@ -1,0 +1,79 @@
+name: Bug report
+description: Report a reproducible problem in ZhiTan
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a problem. Remove credentials, resumes, transcripts, account data, and private logs before submitting.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Career workspace
+        - Job or interview library
+        - Browser assistant
+        - Interview or assessment preparation
+        - Content workflow
+        - Administration or authentication
+        - Deployment or documentation
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: revision
+    attributes:
+      label: ZhiTan revision
+      description: Commit SHA, release, or branch name.
+      placeholder: master at abc1234
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, browser, Python/Node versions, and deployment method.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Provide the smallest repeatable sequence and sanitized inputs.
+      placeholder: |
+        1. Open ...
+        2. Select ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence
+      description: Add screenshots, traces, or logs only after removing private data and secrets.
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: I searched existing issues and pull requests.
+          required: true
+        - label: I removed credentials and personal information from this report.
+          required: true
+        - label: This is not a security vulnerability; security reports follow SECURITY.md.
+          required: true

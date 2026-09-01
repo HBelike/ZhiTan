@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Python tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-career-assistant.txt
+            requirements-development.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt -r requirements-career-assistant.txt -r requirements-development.txt
+      - name: Run Python tests
+        run: python -m pytest -q
+
+  frontend:
+    name: Web and extension checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web-ui/package-lock.json
+      - name: Install web dependencies
+        run: npm --prefix web-ui ci
+      - name: Run web tests
+        run: npm --prefix web-ui test
+      - name: Build web application
+        run: npm --prefix web-ui run build
+      - name: Run browser assistant tests
+        run: npm --prefix browser-extension/job-library test
