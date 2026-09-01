@@ -73,17 +73,19 @@ class _LongSkillLibrary(_FakeSkillLibrary):
 
 
 class CareerSkillRuntimeTests(unittest.TestCase):
-    def test_grill_me_seed_contains_complete_round_based_workflow(self) -> None:
+    def test_public_fixture_exercises_skill_body_without_private_seed(self) -> None:
         project_root = Path(__file__).resolve().parents[1]
-        markdown = (project_root / "deploy/skill-seeds/grill-me/SKILL.md").read_text(
+        markdown = (
+            project_root / "tests/fixtures/skills/minimal-public-skill/SKILL.md"
+        ).read_text(
             encoding="utf-8",
         )
         instructions = CareerSkillRuntime._skill_body(markdown)
 
-        self.assertIn("Interview the user relentlessly", instructions)
-        self.assertIn("Then wait for the user's answers before the next round", instructions)
-        self.assertIn("Do not act on it until the user confirms", instructions)
-        self.assertNotIn("Run a `/grilling` session", instructions)
+        self.assertIn("Read the user's request", instructions)
+        self.assertIn("$ARGUMENTS", instructions)
+        self.assertIn("${SKILL_DIR}", instructions)
+        self.assertNotIn("name: minimal-public-skill", instructions)
 
     def test_mentions_only_disclose_metadata(self) -> None:
         library = _FakeSkillLibrary(("resume-review", "interview-coach"))
