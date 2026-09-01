@@ -1,0 +1,257 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#344027" flood-opacity="0.10"/>
+    </filter>
+    <filter id="smallShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#344027" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#8aa83f"/>
+    </marker>
+    <style>
+      .bg { fill:#f7f8f3; }
+      .sidebar { fill:#fbfcf7; stroke:#e4e7dd; }
+      .card { fill:#fff; stroke:#e4e8dd; filter:url(#softShadow); }
+      .mini { fill:#fff; stroke:#e8ecdf; filter:url(#smallShadow); }
+      .muted { fill:#7b826f; font-size:18px; }
+      .eyebrow { fill:#8aa83f; font-size:15px; font-weight:800; letter-spacing:2px; }
+      .title { fill:#243020; font-size:34px; font-weight:900; }
+      .h2 { fill:#243020; font-size:24px; font-weight:900; }
+      .h3 { fill:#243020; font-size:19px; font-weight:900; }
+      .small { fill:#8b9380; font-size:15px; }
+      .tiny { fill:#9aa08f; font-size:13px; }
+      .green { fill:#6f8f2d; font-weight:900; }
+      .orange { fill:#b26b12; font-weight:900; }
+      .blue { fill:#15598e; font-weight:900; }
+      .pillGreen { fill:#edf6dd; stroke:#dfe9c8; }
+      .pillBlue { fill:#eaf4ff; stroke:#cfe2ff; }
+      .pillRed { fill:#fff0f0; stroke:#ffd6d6; }
+      .btnGreen { fill:#88a83f; }
+      .btnRed { fill:#bd5558; }
+      .btnBlue { fill:#5479bd; }
+      .line { stroke:#d9dfcf; stroke-width:2; }
+      .routeLine { stroke:#8aa83f; stroke-width:3; stroke-dasharray:8 8; marker-end:url(#arrow); fill:none; }
+      text { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1920" height="1080"/>
+
+  <!-- 固定左侧入口导航 -->
+  <rect class="sidebar" x="0" y="0" width="270" height="1080"/>
+  <rect x="32" y="34" width="46" height="46" rx="14" fill="#8aa83f"/>
+  <text x="55" y="64" text-anchor="middle" fill="#fff" font-size="16" font-weight="900">AI</text>
+  <text x="92" y="52" class="h3">内容审核台</text>
+  <text x="92" y="76" class="tiny">Weekly GitHub Agent</text>
+
+  <g transform="translate(28,126)">
+    <rect width="214" height="48" rx="14" fill="#eef5dc"/>
+    <text x="22" y="31" class="green" font-size="16">总览首页</text>
+    <text x="145" y="31" class="tiny">/review</text>
+  </g>
+  <g transform="translate(28,186)">
+    <rect width="214" height="48" rx="14" fill="#fff"/>
+    <text x="22" y="31" fill="#5f6559" font-size="16" font-weight="800">文章预览</text>
+    <text x="139" y="31" class="tiny">/article</text>
+  </g>
+  <g transform="translate(28,246)">
+    <rect width="214" height="48" rx="14" fill="#fff"/>
+    <text x="22" y="31" fill="#5f6559" font-size="16" font-weight="800">任务流程</text>
+    <text x="139" y="31" class="tiny">/pipeline</text>
+  </g>
+  <g transform="translate(28,306)">
+    <rect width="214" height="48" rx="14" fill="#fff"/>
+    <text x="22" y="31" fill="#5f6559" font-size="16" font-weight="800">媒体素材</text>
+    <text x="139" y="31" class="tiny">/assets</text>
+  </g>
+  <g transform="translate(28,366)">
+    <rect width="214" height="48" rx="14" fill="#fff"/>
+    <text x="22" y="31" fill="#5f6559" font-size="16" font-weight="800">短视频蓝图</text>
+    <text x="126" y="31" class="tiny">/storyboard</text>
+  </g>
+  <g transform="translate(28,426)">
+    <rect width="214" height="48" rx="14" fill="#fff"/>
+    <text x="22" y="31" fill="#5f6559" font-size="16" font-weight="800">生成提示词</text>
+    <text x="132" y="31" class="tiny">/prompts</text>
+  </g>
+
+  <rect x="28" y="900" width="214" height="124" rx="20" fill="#fff" stroke="#e2e7d8"/>
+  <text x="48" y="932" class="eyebrow" font-size="12">ROUTE RULE</text>
+  <text x="48" y="962" class="small">所有模块入口化</text>
+  <text x="48" y="988" class="small">详情均为只读预览</text>
+  <text x="48" y="1014" class="small">操作由任务链执行</text>
+
+  <!-- 主区标题 -->
+  <g transform="translate(314,42)">
+    <text class="eyebrow">PREVIEW CONSOLE</text>
+    <text y="46" class="title">公众号内容审核台 · 路由化总览</text>
+  </g>
+  <rect x="1742" y="48" width="120" height="46" rx="15" class="btnGreen"/>
+  <text x="1802" y="78" text-anchor="middle" fill="#fff" font-size="16" font-weight="900">刷新数据</text>
+
+  <!-- 顶部资源状态栏：保持不动 -->
+  <g transform="translate(314,120)">
+    <text class="eyebrow">RESOURCE STATUS · 固定顶部状态栏</text>
+    <g transform="translate(0,22)">
+      <rect class="mini" width="292" height="92" rx="20"/>
+      <text x="22" y="34" class="small">内容</text>
+      <text x="22" y="62" class="green" font-size="22">已就绪</text>
+      <text x="22" y="82" class="tiny">content_id=13</text>
+    </g>
+    <g transform="translate(316,22)">
+      <rect class="mini" width="292" height="92" rx="20"/>
+      <text x="22" y="34" class="small">图片</text>
+      <text x="22" y="62" class="green" font-size="22">已就绪</text>
+      <text x="22" y="82" class="tiny">5/5</text>
+    </g>
+    <g transform="translate(632,22)">
+      <rect class="mini" width="292" height="92" rx="20"/>
+      <text x="22" y="34" class="small">音频</text>
+      <text x="22" y="62" class="orange" font-size="22">未就绪</text>
+      <text x="22" y="82" class="tiny">0/1</text>
+    </g>
+    <g transform="translate(948,22)">
+      <rect class="mini" width="292" height="92" rx="20"/>
+      <text x="22" y="34" class="small">视频</text>
+      <text x="22" y="62" class="orange" font-size="22">未就绪</text>
+      <text x="22" y="82" class="tiny">0/1</text>
+    </g>
+    <g transform="translate(1264,22)">
+      <rect class="mini" width="292" height="92" rx="20"/>
+      <text x="22" y="34" class="small">审核</text>
+      <text x="22" y="62" class="orange" font-size="22">待确认</text>
+      <text x="22" y="82" class="tiny">通过后进入草稿箱</text>
+    </g>
+  </g>
+
+  <!-- 首页入口卡片 -->
+  <g transform="translate(314,278)">
+    <text class="eyebrow">MODULE ENTRANCES</text>
+    <text y="36" class="h2">首页只放缩略入口，点击进入对应子路由</text>
+
+    <!-- Article thumbnail -->
+    <rect class="card" x="0" y="60" width="480" height="340" rx="26"/>
+    <text x="28" y="98" class="eyebrow">ARTICLE CARD</text>
+    <text x="28" y="132" class="h2">文章预览缩略图</text>
+    <rect x="28" y="158" width="424" height="164" rx="16" fill="#fff" stroke="#e7edf3"/>
+    <rect x="154" y="182" width="160" height="34" rx="8" fill="#15598e"/>
+    <text x="234" y="205" fill="#fff" text-anchor="middle" font-size="16" font-weight="900">本周主线</text>
+    <line x1="92" y1="238" x2="386" y2="238" stroke="#d8e0ea" stroke-width="4" stroke-linecap="round"/>
+    <line x1="112" y1="266" x2="360" y2="266" stroke="#d8e0ea" stroke-width="4" stroke-linecap="round"/>
+    <line x1="140" y1="294" x2="330" y2="294" stroke="#d8e0ea" stroke-width="4" stroke-linecap="round"/>
+    <rect x="28" y="340" width="132" height="34" rx="12" class="pillBlue"/>
+    <text x="94" y="362" text-anchor="middle" class="blue" font-size="14">/review/article</text>
+    <text x="178" y="362" class="tiny">点击后铺满右侧，只读预览</text>
+
+    <!-- Pipeline thumbnail -->
+    <rect class="card" x="512" y="60" width="330" height="340" rx="26"/>
+    <text x="540" y="98" class="eyebrow">PIPELINE</text>
+    <text x="540" y="132" class="h2">任务状态</text>
+    <g transform="translate(540,158)">
+      <rect width="274" height="42" rx="13" fill="#f8fbf1" stroke="#e7ebde"/>
+      <text x="16" y="27" class="h3" font-size="15">SearchTask</text>
+      <rect x="210" y="10" width="46" height="22" rx="10" class="pillGreen"/>
+      <text x="233" y="26" text-anchor="middle" class="green" font-size="12">成功</text>
+      <rect y="56" width="274" height="42" rx="13" fill="#f8fbf1" stroke="#e7ebde"/>
+      <text x="16" y="83" class="h3" font-size="15">SummaryTask</text>
+      <rect x="210" y="66" width="46" height="22" rx="10" class="pillGreen"/>
+      <text x="233" y="82" text-anchor="middle" class="green" font-size="12">成功</text>
+      <rect y="112" width="274" height="42" rx="13" fill="#fff9ef" stroke="#f4e2bd"/>
+      <text x="16" y="139" class="h3" font-size="15">SeedanceClipTask</text>
+      <rect x="188" y="122" width="68" height="22" rx="10" fill="#fff1d6"/>
+      <text x="222" y="138" text-anchor="middle" class="orange" font-size="12">待配置</text>
+    </g>
+    <rect x="540" y="340" width="130" height="34" rx="12" class="pillBlue"/>
+    <text x="605" y="362" text-anchor="middle" class="blue" font-size="14">/pipeline</text>
+
+    <!-- Assets thumbnail -->
+    <rect class="card" x="874" y="60" width="330" height="340" rx="26"/>
+    <text x="902" y="98" class="eyebrow">ASSETS</text>
+    <text x="902" y="132" class="h2">媒体素材</text>
+    <g transform="translate(902,158)">
+      <rect width="76" height="76" rx="16" fill="#f7fbff" stroke="#cfe2ff"/>
+      <rect x="96" width="76" height="76" rx="16" fill="#f7fbff" stroke="#cfe2ff"/>
+      <rect x="192" width="76" height="76" rx="16" fill="#f7fbff" stroke="#cfe2ff"/>
+      <circle cx="38" cy="38" r="16" fill="#d8ebff"/>
+      <circle cx="134" cy="38" r="16" fill="#d8ebff"/>
+      <circle cx="230" cy="38" r="16" fill="#d8ebff"/>
+      <rect y="96" width="76" height="76" rx="16" fill="#fff9ef" stroke="#f4e2bd"/>
+      <rect x="96" y="96" width="76" height="76" rx="16" fill="#fff9ef" stroke="#f4e2bd"/>
+      <rect x="192" y="96" width="76" height="76" rx="16" fill="#fff9ef" stroke="#f4e2bd"/>
+      <text x="38" y="140" text-anchor="middle" class="orange" font-size="12">音频</text>
+      <text x="134" y="140" text-anchor="middle" class="orange" font-size="12">视频</text>
+      <text x="230" y="140" text-anchor="middle" class="orange" font-size="12">封面</text>
+    </g>
+    <rect x="902" y="340" width="116" height="34" rx="12" class="pillBlue"/>
+    <text x="960" y="362" text-anchor="middle" class="blue" font-size="14">/assets</text>
+
+    <!-- Prompt thumbnail -->
+    <rect class="card" x="1236" y="60" width="330" height="340" rx="26"/>
+    <text x="1264" y="98" class="eyebrow">PROMPTS</text>
+    <text x="1264" y="132" class="h2">提示词卡片</text>
+    <g transform="translate(1264,158)">
+      <rect width="274" height="48" rx="14" fill="#f7fbff" stroke="#cfe2ff"/>
+      <text x="18" y="30" class="blue" font-size="14">Summary Prompt</text>
+      <rect y="66" width="274" height="48" rx="14" fill="#f7fbff" stroke="#cfe2ff"/>
+      <text x="18" y="96" class="blue" font-size="14">Image Prompt</text>
+      <rect y="132" width="274" height="48" rx="14" fill="#f7fbff" stroke="#cfe2ff"/>
+      <text x="18" y="162" class="blue" font-size="14">Video Clip Prompt</text>
+    </g>
+    <rect x="1264" y="340" width="126" height="34" rx="12" class="pillBlue"/>
+    <text x="1327" y="362" text-anchor="middle" class="blue" font-size="14">/prompts</text>
+  </g>
+
+  <!-- 底部短视频蓝图保留 -->
+  <g transform="translate(314,730)">
+    <rect class="card" width="1010" height="250" rx="28"/>
+    <text x="28" y="42" class="eyebrow">SHORT VIDEO BLUEPRINT · 首页底部保留</text>
+    <text x="28" y="78" class="h2">短视频蓝图缩略：7 段时间线 + Seedance 片段计划</text>
+    <line x1="54" y1="148" x2="940" y2="148" stroke="#cfe2ff" stroke-width="8" stroke-linecap="round"/>
+    <g fill="#15598e">
+      <circle cx="70" cy="148" r="14"/><circle cx="210" cy="148" r="14"/><circle cx="350" cy="148" r="14"/>
+      <circle cx="490" cy="148" r="14"/><circle cx="630" cy="148" r="14"/><circle cx="770" cy="148" r="14"/><circle cx="910" cy="148" r="14"/>
+    </g>
+    <g class="tiny">
+      <text x="44" y="190">0-5s</text><text x="184" y="190">项目1</text><text x="324" y="190">项目2</text>
+      <text x="464" y="190">项目3</text><text x="604" y="190">项目4</text><text x="744" y="190">项目5</text><text x="884" y="190">CTA</text>
+    </g>
+    <rect x="28" y="205" width="150" height="34" rx="12" class="pillBlue"/>
+    <text x="103" y="227" text-anchor="middle" class="blue" font-size="14">/storyboard</text>
+  </g>
+
+  <!-- 详情子路由示意：右侧铺满视图 -->
+  <g transform="translate(1354,730)">
+    <rect class="card" width="512" height="250" rx="28"/>
+    <text x="28" y="42" class="eyebrow">DETAIL ROUTE</text>
+    <text x="28" y="76" class="h2">点击卡片后的右侧详情页</text>
+    <rect x="28" y="98" width="456" height="86" rx="18" fill="#f8fbff" stroke="#cfe2ff"/>
+    <text x="52" y="130" class="blue" font-size="16">/review/article</text>
+    <text x="52" y="158" class="small">文章预览铺满右侧，仅支持预览，不允许修改</text>
+    <rect x="28" y="198" width="118" height="34" rx="12" class="btnGreen"/>
+    <text x="87" y="220" text-anchor="middle" fill="#fff" font-size="14" font-weight="900">通过</text>
+    <rect x="158" y="198" width="118" height="34" rx="12" class="btnRed"/>
+    <text x="217" y="220" text-anchor="middle" fill="#fff" font-size="14" font-weight="900">驳回</text>
+    <rect x="288" y="198" width="158" height="34" rx="12" class="btnBlue"/>
+    <text x="367" y="220" text-anchor="middle" fill="#fff" font-size="14" font-weight="900">请求重生成</text>
+  </g>
+
+  <!-- 交互流程说明 -->
+  <path class="routeLine" d="M780 658 C900 680, 1030 690, 1360 790"/>
+  <rect x="1368" y="285" width="498" height="360" rx="28" fill="#ffffff" stroke="#e4e8dd" filter="url(#softShadow)"/>
+  <text x="1398" y="330" class="eyebrow">ACTION FLOW</text>
+  <text x="1398" y="366" class="h2">审核动作进入任务链</text>
+  <g transform="translate(1398,402)">
+    <rect width="438" height="56" rx="16" class="pillGreen"/>
+    <text x="20" y="35" class="green" font-size="16">通过 → ArticleLayoutTask → DeliverTask → 微信草稿箱</text>
+    <rect y="74" width="438" height="56" rx="16" class="pillRed"/>
+    <text x="20" y="109" fill="#bd5558" font-size="16" font-weight="900">驳回 → SummaryTask 重新执行</text>
+    <rect y="148" width="438" height="56" rx="16" class="pillBlue"/>
+    <text x="20" y="183" class="blue" font-size="16">审核备注 → 追加到再生成 prompt</text>
+    <rect y="222" width="438" height="56" rx="16" fill="#fff9ef" stroke="#f4e2bd"/>
+    <text x="20" y="257" class="orange" font-size="16">当前阶段：只做预览，不允许在详情里直接编辑正文</text>
+  </g>
+
+  <!-- 注释 -->
+  <text x="314" y="1024" class="muted">原型 v1：总览页入口化 + 子路由详情页 + 审核动作任务化。审批通过后再开始改 Vue 结构和后端接口。</text>
+</svg>

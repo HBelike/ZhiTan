@@ -4,7 +4,7 @@
 
 把当前项目的工作区快照整理为独立的公开仓库 `HBelike/ZhiTan`，对外品牌统一为 **ZhiTan**。新仓库以求职者为核心，重点介绍职位发现、简历与 JD 分析、求职 Agent、面经 RAG、面试及笔试辅助；GitHub 周榜与微信公众号内容流水线作为附加自动化模块保留。
 
-原仓库 `D:\MyPro\WechaOffiicialAccount` 在整个过程中保持只读。复制、代码调整、提交和推送只发生在 `D:\MyPro\ZhiTan` 的 `master` 分支。
+原仓库 `<original-worktree>` 在整个过程中保持只读。复制、代码调整、提交和推送只发生在 `<zhitan-worktree>` 的 `master` 分支。
 
 ## 仓库隔离与发布顺序
 

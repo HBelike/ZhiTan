@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Find Job 求职浏览器助手",
+  "name": "ZhiTan Browser Assistant",
   "version": "0.3.2",
   "description": "读取用户主动选择的职位、公开面经或当前笔试题面；线上笔试功能仅分析，不自动填写或提交。",
   "permissions": [

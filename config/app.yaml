@@ -1,0 +1,258 @@
+app:
+  name: zhitan
+  run_mode: once
+  timezone: Asia/Shanghai
+  data_dir: data
+  output_dir: outputs
+
+schedule:
+  production_day: friday
+  production_time: "08:00"
+  draft_time: "09:00"
+  loop_interval_seconds: 60
+  # API 手动执行和常驻 Scheduler 共用旧 SQLite 时的跨容器互斥锁；六小时内不抢占。
+  pipeline_execution_lock_stale_seconds: 21600
+
+logging:
+  level: INFO
+  dir: logs
+  file: app.log
+
+database:
+  path: data/app.db
+  timeout_seconds: 30
+
+github:
+  api_base_url: https://api.github.com
+  search_endpoint: /search/repositories
+  api_version: "2022-11-28"
+  token_env: GITHUB_TOKEN
+  search_query: "fork:false archived:false"
+  min_stars: 1
+  pushed_within_days: 30
+  sort: stars
+  order: desc
+  candidate_limit: 100
+  per_page: 50
+  timeout_seconds: 30
+
+ranking:
+  top_n: 5
+  growth_weight: 0.7
+  growth_rate_weight: 0.2
+  star_weight: 0.1
+
+llm:
+  provider: deepseek
+  base_url: https://api.deepseek.com
+  chat_completions_endpoint: /chat/completions
+  api_key_env: DEEPSEEK_API_KEY
+  model: deepseek-v4-pro
+  temperature: 0.4
+  # 周榜文章、五张插图提示词和视频蓝图都需要结构化输出；推理模型会先消耗 reasoning tokens，
+  # 4096 容易在正文输出前触发 length。提高预算只影响一次请求的上限，不等于固定消耗。
+  max_tokens: 12288
+  timeout_seconds: 90
+  response_format_json: true
+
+image:
+  provider: seedream
+  paid_generation_enabled: true
+  base_url: https://ark.cn-beijing.volces.com/api/v3
+  generations_endpoint: /images/generations
+  api_key_env: VOLCENGINE_ARK_API_KEY
+  model: doubao-seedream-4-0-250828
+  # 16:9 横版教学图；2048 与 1152 都是 32 的倍数，适合正文预览和后续横版视频裁切。
+  size: 2048x1152
+  n: 1
+  response_format: url
+  watermark: false
+  timeout_seconds: 180
+  output_dir: outputs/images
+  skip_when_api_key_missing: true
+  # 同一 content_id 的重试必须复用已成功落盘的素材；每周新任务会生成新的 content_id，
+  # 因此仍会完整更新五张项目图，不会混用上一期素材。
+  refresh_existing_assets_on_run: false
+  github_asset_fallback_enabled: false
+  github_asset_timeout_seconds: 10
+  github_asset_max_bytes: 5242880
+  github_asset_max_candidate_attempts: 3
+  github_asset_allowed_extensions:
+    - .png
+    - .jpg
+    - .jpeg
+    - .webp
+    - .gif
+  local_fallback_enabled: false
+  chinese_overlay_enabled: false
+  renderer:
+    name: gotenberg_html
+    gotenberg_base_url: http://127.0.0.1:3000
+    timeout_seconds: 60
+    max_attempts: 5
+    width: 2048
+    height: 1152
+    template_version: article_visual_v1
+    renderer_version: gotenberg_html_v1
+    font_path: assets/fonts/NotoSansSC-VF.ttf
+    font_version: noto-cjk-2.004-523d033d
+    concept_background_enabled: false
+  prompt:
+    # 火山方舟官方建议中文图片 prompt 不超过 300 字；更长的说明留在文章图注中。
+    max_length: 300
+    visual_system: "无标题的16:9工程架构信息图，白色画布，深蓝核心卡片，浅灰普通卡片，扁平矢量，精细对齐，克制留白。"
+    composition_rule: "严格按指定数量和位置绘制节点，每个节点只出现一次；深灰实线正交箭头只连接指定起止节点，禁止镜像、复制、补齐对称节点、曲线或交叉线。"
+    text_rule: "只显示指定的节点名称，连线不生成文字；禁止标题区、正文段落、说明性长句、页码、仓库名和额外文字。"
+    style_rule: "核心节点使用深蓝底白字，普通节点使用浅灰底深色字；突出组件边界和数据流向，不使用空白占位卡片。"
+    safe_zone_rule: "主体位于画面中心安全区，四周留白，模块、文字和箭头均不得贴边。"
+    negative_prompt: "不要标题区、底部装饰点、重复节点、镜像节点、空白占位卡片、人物、照片、曲线箭头、交叉线、3D效果、真实logo、水印、长英文、伪文字或乱码。"
+
+audio:
+  # 音频生成总开关；关闭后不调用豆包 TTS，也不启用本地或 Edge 语音兜底。
+  enabled: false
+  provider: doubao_tts_v3
+  # 新版豆包语音 V3 HTTP 单向流式接口，仅使用豆包语音控制台 API Key 鉴权。
+  api_url: https://openspeech.bytedance.com/api/v3/tts/unidirectional
+  api_key_env: DOUBAO_TTS_API_KEY
+  resource_id: seed-tts-2.0
+  voice_type_env: DOUBAO_TTS_VOICE_TYPE
+  default_voice_type: zh_female_vv_uranus_bigtts
+  encoding: mp3
+  speed_ratio: 1.0
+  rate: 24000
+  # 单段旁白保守控制在 900 UTF-8 字节，长文按句子拆分后由 ffmpeg 无损拼接。
+  max_input_utf8_bytes: 900
+  timeout_seconds: 120
+  output_dir: outputs/audio
+  skip_when_api_key_missing: true
+  local_fallback_enabled: true
+
+video:
+  provider: seedance_ark
+  submit_enabled: false
+  base_url: https://ark.cn-beijing.volces.com
+  generation_endpoint: /api/v3/contents/generations/tasks
+  task_status_endpoint_template: /api/v3/contents/generations/tasks/{task_id}
+  api_key_env: VOLCENGINE_ARK_API_KEY
+  # 已通过 Ark 模型列表校验的实际模型 ID；不要使用控制台展示名 Doubao-Seedance-2.0-fast。
+  model: doubao-seedance-2-0-fast-260128
+  aspect_ratio: "16:9"
+  resolution: 720p
+  # Seedance 片段时长由分镜的语义时长决定，不再把 7 段都强制成 15 秒。
+  # 该值只作为分镜没有给出时长时的保守默认值。
+  clip_duration_seconds: 10
+  min_clip_duration_seconds: 4
+  max_clip_duration_seconds: 15
+  duration_seconds: 60
+  # 当前主链路为纯文生“动态教学画面”。五张架构图仅供文章和人工审核使用，
+  # 不再成为 Seedance 提交的强依赖；如需参考图可在后续改为 reference-to-video。
+  required_image_count: 0
+  generation_type: text-to-video
+  reference_images_enabled: false
+  # Seedance 只负责生成连续的动态画面；统一由豆包 TTS 生成旁白，再由装配任务混音。
+  # 这样可避免每一段模型自带音频与整段讲解口径、节奏不一致。
+  generate_audio: false
+  watermark: false
+  web_search: false
+  return_last_frame: true
+  seed: -1
+  timeout_seconds: 120
+  output_dir: outputs/videos
+  skip_when_material_missing: true
+  skip_when_api_key_missing: true
+  local_fallback_enabled: true
+  assembly:
+    enabled: true
+    require_voiceover: true
+    timeout_seconds: 900
+    # 视频下载后读取真实时长，再生成受原始分镜约束的旁白与字幕时间线。
+    timing_mode: video_first_spec_bound
+    # 最终成片直接烧录中文字幕，避免不同播放器未默认打开外挂字幕。
+    burn_subtitles: true
+  narration:
+    # 视频完成后按真实时长改写旁白；该值保守于普通中文讲解速度，优先保证不截断人声。
+    characters_per_second: 3.3
+    max_tts_speed_ratio: 1.08
+    tail_padding_seconds: 0.2
+    max_refit_attempts: 1
+  quality_assurance:
+    # 对每段生成视频抽取关键帧做事实与可读性质检；未配置视觉模型时转人工审核，不伪造通过。
+    enabled: true
+    provider: aliyun_qwen_vl
+    model: qwen3-vl-plus
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    api_key_env: DASHSCOPE_API_KEY
+    sample_frame_count: 3
+    minimum_score: 72
+    max_regeneration_attempts: 1
+    timeout_seconds: 90
+  clip_prompt:
+    max_length: 2400
+    visual_system: "所有 clip 必须保持统一的技术教学课件风：有纸张或深灰纹理的干净背景、黄绿色层级标题、蓝色模块容器、橙色强调标签、清晰箭头和流程节点。不要用满屏蓝绿色霓虹；信息层级应像讲师逐步展示的 PPT，而不是抽象科技广告。"
+    continuity_rule: "本段不是独立广告片，要像连续课程的一页动态课件；画面必须承接上一段，并为下一段留下自然过渡。"
+    motion_rule: "请让画面跟随旁白逐步展开，节点按讲解顺序高亮，流程线自然推进。"
+    audio_rule: "本片段不要生成旁白、人物口型或内嵌字幕；画面节奏需适配后期统一配入的中文旁白与字幕。"
+    reference_image_rule: "如果使用参考图，只继承其架构图风格、色彩和模块布局，不要照搬水印或无关文字。"
+    negative_prompt: "避免随机抽象画面、满屏蓝绿色霓虹、错误 UI、乱码文字、错误项目名、夸张电影镜头、跳切感很重的 slideshow。"
+
+storage:
+  provider: local
+  asset_types:
+    - image
+    - audio
+    - video
+  skip_when_no_assets: true
+  skip_when_unconfigured: true
+  local:
+    upload_dir: outputs/public
+    public_base_url_env: STORAGE_LOCAL_PUBLIC_BASE_URL
+  r2:
+    account_id_env: CLOUDFLARE_R2_ACCOUNT_ID
+    access_key_id_env: CLOUDFLARE_R2_ACCESS_KEY_ID
+    secret_access_key_env: CLOUDFLARE_R2_SECRET_ACCESS_KEY
+    bucket_env: CLOUDFLARE_R2_BUCKET
+    public_base_url_env: CLOUDFLARE_R2_PUBLIC_BASE_URL
+  tos:
+    endpoint_env: VOLCENGINE_TOS_ENDPOINT
+    region_env: VOLCENGINE_TOS_REGION
+    bucket_env: VOLCENGINE_TOS_BUCKET
+    access_key_id_env: VOLCENGINE_TOS_ACCESS_KEY_ID
+    secret_access_key_env: VOLCENGINE_TOS_SECRET_ACCESS_KEY
+    public_base_url_env: VOLCENGINE_TOS_PUBLIC_BASE_URL
+  cos:
+    region_env: TENCENT_COS_REGION
+    bucket_env: TENCENT_COS_BUCKET
+    secret_id_env: TENCENT_COS_SECRET_ID
+    secret_key_env: TENCENT_COS_SECRET_KEY
+    public_base_url_env: TENCENT_COS_PUBLIC_BASE_URL
+
+preview:
+  enabled: true
+  output_dir: outputs/preview
+  media_route_prefix: /api/media-assets
+  expose_local_media: true
+
+wechat:
+  enabled: true
+  api_base_url: https://api.weixin.qq.com
+  app_id_env: WECHAT_APP_ID
+  app_secret_env: WECHAT_APP_SECRET
+  author_env: WECHAT_AUTHOR
+  default_author: ""
+  content_source_url_env: WECHAT_CONTENT_SOURCE_URL
+  timeout_seconds: 30
+  skip_when_unconfigured: true
+  require_cover_asset: true
+  require_public_article_images: false
+  require_local_uploadable_images: true
+  require_video_asset: false
+  require_local_uploadable_video: false
+  cover_material_type: image
+  video_material_type: video
+  need_open_comment: false
+  only_fans_can_comment: false
+  draft:
+    token_endpoint: /cgi-bin/token
+    add_endpoint: /cgi-bin/draft/add
+    upload_image_endpoint: /cgi-bin/media/uploadimg
+    add_material_endpoint: /cgi-bin/material/add_material

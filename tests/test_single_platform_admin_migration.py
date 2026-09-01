@@ -19,7 +19,7 @@ class SinglePlatformAdminMigrationTests(unittest.TestCase):
         self.assertIn("role IN ('user', 'admin')", source)
         self.assertIn("ROW_NUMBER() OVER", source)
         self.assertNotIn("platform_users_admin_email_check", source)
-        self.assertNotIn("2963613812@qq.com", source)
+        self.assertNotIn("admin@example.com", source)
 
     def test_migration_enforces_one_admin_for_the_whole_platform(self) -> None:
         source = MIGRATION_PATH.read_text(encoding="utf-8")

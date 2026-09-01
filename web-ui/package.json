@@ -1,0 +1,23 @@
+{
+  "name": "zhitan-ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5173",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 4173",
+    "test": "node --test src/*.test.js",
+    "test:e2e:responsive": "playwright test e2e/responsive-gate-one.spec.js"
+  },
+  "dependencies": {
+    "@vitejs/plugin-vue": "^6.0.0",
+    "element-plus": "^2.14.5",
+    "v-region": "^3.5.2",
+    "vite": "^7.0.0",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1"
+  }
+}

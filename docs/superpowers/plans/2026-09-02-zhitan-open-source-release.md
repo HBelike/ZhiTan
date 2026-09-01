@@ -4,7 +4,7 @@
 
 **Goal:** Publish a clean, tested ZhiTan snapshot on `HBelike/ZhiTan` while removing only the Resume Assistant and Evaluation Center page routes and keeping their implementation code.
 
-**Architecture:** Work only in the isolated `D:\MyPro\ZhiTan` repository on `master`. Remove the two features from route catalogs and rendering while retaining components and backend modules; move deployment-specific identity and origin values behind environment/package configuration; sanitize the public tree before its first push.
+**Architecture:** Work only in the isolated `<zhitan-worktree>` repository on `master`. Remove the two features from route catalogs and rendering while retaining components and backend modules; move deployment-specific identity and origin values behind environment/package configuration; sanitize the public tree before its first push.
 
 **Tech Stack:** Python 3.11+、FastAPI、SQLAlchemy/Alembic、Vue 3、Vite 7、Chrome Extension Manifest V3、Docker Compose、pytest、Node test runner、GitHub Actions
 
@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Only modify `D:\MyPro\ZhiTan`; `D:\MyPro\WechaOffiicialAccount` remains read-only.
+- Only modify `<zhitan-worktree>`; `<original-worktree>` remains read-only.
 - Work and commit only on `master`; the only remote is `git@github.com:HBelike/ZhiTan.git`.
 - Remove only the page routes/navigation for Resume Assistant and Evaluation Center; retain their components, styles, APIs, services, repositories, migrations, tests, and design documents.
 - Brand text is always `ZhiTan`; there is no Chinese product name.
@@ -61,7 +61,7 @@ def test_retired_routes_are_not_returned_but_legacy_settings_are_accepted(self) 
 - [ ] **Step 2: Run the focused tests and confirm failure**
 
 ```powershell
-D:\MyPro\WechaOffiicialAccount\.venv\Scripts\python.exe -m pytest tests/test_navigation_config.py -q
+python -m pytest tests/test_navigation_config.py -q
 Set-Location web-ui
 node --test src/navigation-access.test.js
 ```
@@ -139,7 +139,7 @@ Update migration tests to assert that migration 20 contains `uq_platform_users_s
 - [ ] **Step 2: Run focused tests and confirm failure**
 
 ```powershell
-D:\MyPro\WechaOffiicialAccount\.venv\Scripts\python.exe -m pytest tests/test_platform_access_settings.py tests/test_single_platform_admin_migration.py tests/test_default_career_ownership_migration.py tests/test_navigation_config.py -q
+python -m pytest tests/test_platform_access_settings.py tests/test_single_platform_admin_migration.py tests/test_default_career_ownership_migration.py tests/test_navigation_config.py -q
 ```
 
 Expected: the settings module is missing and migration assertions fail.
@@ -191,7 +191,7 @@ Add `PLATFORM_ADMIN_EMAIL=admin@example.com` to all three example environments.
 - [ ] **Step 4: Run administrator tests**
 
 ```powershell
-D:\MyPro\WechaOffiicialAccount\.venv\Scripts\python.exe -m pytest tests/test_platform_access_settings.py tests/test_single_platform_admin_migration.py tests/test_default_career_ownership_migration.py tests/test_navigation_config.py tests/test_platform_actor_middleware.py -q
+python -m pytest tests/test_platform_access_settings.py tests/test_single_platform_admin_migration.py tests/test_default_career_ownership_migration.py tests/test_navigation_config.py tests/test_platform_actor_middleware.py -q
 ```
 
 Expected: all focused tests pass and no private administrator address exists in code or migrations.
@@ -238,7 +238,7 @@ def test_invalid_package_origin_is_rejected() -> None:
 - [ ] **Step 2: Run the test and confirm failure**
 
 ```powershell
-D:\MyPro\WechaOffiicialAccount\.venv\Scripts\python.exe -m pytest tests/test_package_boss_extension.py -q
+python -m pytest tests/test_package_boss_extension.py -q
 ```
 
 Expected: imports fail because the helper functions do not exist.
@@ -264,7 +264,7 @@ python scripts/package_boss_extension.py
 - [ ] **Step 4: Run package and extension tests**
 
 ```powershell
-D:\MyPro\WechaOffiicialAccount\.venv\Scripts\python.exe -m pytest tests/test_package_boss_extension.py tests/test_boss_extension_distribution.py -q
+python -m pytest tests/test_package_boss_extension.py tests/test_boss_extension_distribution.py -q
 npm --prefix browser-extension/job-library test
 ```
 
@@ -299,7 +299,7 @@ git commit -m "refactor: configure extension application origin"
 - [ ] **Step 1: Record the failing sanitization scan**
 
 ```powershell
-rg -n '2963613812@qq\.com|xxlwcc@gmail\.com|43\.155\.86\.239|xingxingtech\.cn|Hbelike_Private|HBelike_Private|sk-[A-Za-z0-9_-]{16,}' .
+rg -n '2963613812@qq\.com|xxlwcc@gmail\.com|43\.155\.86\.239|xingxingtech\.cn|ZhiTan|ZhiTan|sk-[A-Za-z0-9_-]{16,}' .
 ```
 
 Expected: matches occur in code, tests, extension sources, and historical documentation.
@@ -309,13 +309,13 @@ Expected: matches occur in code, tests, extension sources, and historical docume
 Use these exact substitutions across documentation and fixtures:
 
 ```text
-2963613812@qq.com       -> admin@example.com
-xxlwcc@gmail.com        -> user@example.com
-43.155.86.239           -> 203.0.113.10
-xingxingtech.cn         -> your-domain.example
-/home/ubuntu/apps/Hbelike_Private -> /opt/zhitan
-HBelike/Hbelike_Private -> HBelike/ZhiTan
-sk-super-secret-value   -> test-langsmith-key
+admin@example.com       -> admin@example.com
+user@example.com        -> user@example.com
+private deployment IP  -> 203.0.113.10
+your-domain.example         -> your-domain.example
+/opt/zhitan -> /opt/zhitan
+HBelike/ZhiTan -> HBelike/ZhiTan
+test-langsmith-key   -> test-langsmith-key
 ```
 
 Do not replace third-party URLs, protocol examples, or references needed for license attribution.
@@ -334,8 +334,8 @@ Doubao TTS request uid         = zhitan
 - [ ] **Step 4: Run the sanitization scan and syntax checks**
 
 ```powershell
-rg -n '2963613812@qq\.com|xxlwcc@gmail\.com|43\.155\.86\.239|xingxingtech\.cn|Hbelike_Private|HBelike_Private|sk-[A-Za-z0-9_-]{16,}' .
-D:\MyPro\WechaOffiicialAccount\.venv\Scripts\python.exe -m compileall src scripts migrations
+rg -n '2963613812@qq\.com|xxlwcc@gmail\.com|43\.155\.86\.239|xingxingtech\.cn|ZhiTan|ZhiTan|sk-[A-Za-z0-9_-]{16,}' .
+python -m compileall src scripts migrations
 npm --prefix web-ui test
 ```
 
@@ -471,7 +471,7 @@ jobs:
 - [ ] **Step 3: Validate YAML and referenced frontend commands**
 
 ```powershell
-D:\MyPro\WechaOffiicialAccount\.venv\Scripts\python.exe -c "import yaml, pathlib; yaml.safe_load(pathlib.Path('.github/workflows/ci.yml').read_text(encoding='utf-8')); print('workflow yaml ok')"
+python -c "import yaml, pathlib; yaml.safe_load(pathlib.Path('.github/workflows/ci.yml').read_text(encoding='utf-8')); print('workflow yaml ok')"
 npm --prefix web-ui test
 npm --prefix web-ui run build
 ```
@@ -522,8 +522,8 @@ Keep `assets/fonts/NotoSansSC-VF.ttf` because its license is included.
 - [ ] **Step 2: Run focused and full local verification**
 
 ```powershell
-D:\MyPro\WechaOffiicialAccount\.venv\Scripts\python.exe -m pytest tests/test_navigation_config.py tests/test_platform_access_settings.py tests/test_single_platform_admin_migration.py tests/test_default_career_ownership_migration.py tests/test_package_boss_extension.py -q
-D:\MyPro\WechaOffiicialAccount\.venv\Scripts\python.exe -m pytest -q
+python -m pytest tests/test_navigation_config.py tests/test_platform_access_settings.py tests/test_single_platform_admin_migration.py tests/test_default_career_ownership_migration.py tests/test_package_boss_extension.py -q
+python -m pytest -q
 npm --prefix web-ui ci
 npm --prefix web-ui test
 npm --prefix web-ui run build
@@ -537,7 +537,7 @@ Expected: all offline tests and frontend build pass. Record any pre-existing ext
 ```powershell
 git add --all
 git diff --cached --check
-git grep --cached -n -I -E 'ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN (RSA |EC |OPENSSH |)PRIVATE KEY-----|sk-[A-Za-z0-9_-]{16,}|2963613812@qq\.com|43\.155\.86\.239|xingxingtech\.cn|Hbelike_Private'
+git grep --cached -n -I -E 'ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN (RSA |EC |OPENSSH |)PRIVATE KEY-----|sk-[A-Za-z0-9_-]{16,}|2963613812@qq\.com|43\.155\.86\.239|xingxingtech\.cn|ZhiTan'
 git status --short
 ```
 
@@ -555,7 +555,7 @@ git commit -m "chore: import clean ZhiTan project snapshot"
 git branch --show-current
 git remote -v
 git status --short
-git -C D:\MyPro\WechaOffiicialAccount status --short
+git -C <original-worktree> status --short
 ```
 
 Expected: ZhiTan is clean on `master`, has only the ZhiTan remote, and the original repository contains no task-created tracked changes.
