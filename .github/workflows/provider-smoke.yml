@@ -1,0 +1,33 @@
+name: Manual provider smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: HTTPS origin of the operator-owned ZhiTan deployment
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  deployed-readiness:
+    name: Verify operator-owned deployment
+    runs-on: ubuntu-latest
+    environment: provider-smoke
+    steps:
+      - name: Require HTTPS and query public probes
+        env:
+          BASE_URL: ${{ inputs.base_url }}
+        run: |
+          case "$BASE_URL" in
+            https://*) ;;
+            *) echo "base_url must use HTTPS" >&2; exit 2 ;;
+          esac
+          curl --fail --silent --show-error "$BASE_URL/api/health"
+          curl --fail --silent --show-error "$BASE_URL/api/ready"
+      - name: Explain manual Provider boundary
+        run: >-
+          echo "Readiness passed. Validate model, email, Firecrawl, document,
+          observability and media Providers only with sanitized operator-owned data."

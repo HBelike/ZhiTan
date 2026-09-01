@@ -15,21 +15,22 @@ concurrency:
 
 jobs:
   backend:
-    name: Python tests
+    name: Python ${{ matrix.python-version }} tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: |
-            requirements.txt
-            requirements-career-assistant.txt
-            requirements-development.txt
-      - name: Install dependencies
-        run: python -m pip install -r requirements.txt -r requirements-career-assistant.txt -r requirements-development.txt
+          cache-dependency-path: requirements.lock.txt
+      - name: Install locked dependencies
+        run: python -m pip install -r requirements.lock.txt
       - name: Run Python tests
         run: python -m pytest -q
 
@@ -52,3 +53,48 @@ jobs:
         run: npm --prefix web-ui run build
       - name: Run browser assistant tests
         run: npm --prefix browser-extension/job-library test
+
+  public-release-audit:
+    name: Public release audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Scan Git history for secrets
+        run: >-
+          docker run --rm -v "$PWD:/repo"
+          zricethezav/gitleaks:v8.28.0
+          git /repo --redact --no-banner --config=/repo/.gitleaks.toml
+
+  quickstart-smoke:
+    name: Clean-room Docker Quickstart
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      COMPOSE_PROJECT_NAME: zhitan-ci-${{ github.run_id }}-${{ github.run_attempt }}
+      ZHITAN_HTTP_PORT: "18081"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.lock.txt
+      - name: Install locked verifier dependencies
+        run: python -m pip install -r requirements.lock.txt
+      - name: Generate isolated configuration
+        run: ./scripts/setup_quickstart.sh
+      - name: Expand Compose configuration
+        run: docker compose --env-file .env.quickstart config --quiet
+      - name: Build and start the clean-room stack
+        run: docker compose --env-file .env.quickstart up -d --build --wait --wait-timeout 300
+      - name: Verify migration, readiness, Worker and real login
+        run: ./scripts/ci_quickstart_smoke.sh
+      - name: Show sanitized service status on failure
+        if: failure()
+        run: docker compose --env-file .env.quickstart ps -a
+      - name: Destroy only this CI project
+        if: always()
+        run: docker compose --env-file .env.quickstart down -v --remove-orphans
