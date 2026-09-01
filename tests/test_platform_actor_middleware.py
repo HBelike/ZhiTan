@@ -45,6 +45,21 @@ def _client(monkeypatch, *, session: SessionResolution | None) -> TestClient:
     return TestClient(app)
 
 
+def test_readiness_endpoint_is_public_when_authentication_is_required(monkeypatch) -> None:
+    app = FastAPI()
+    monkeypatch.setenv("PLATFORM_AUTH_REQUIRED", "true")
+    app.middleware("http")(web_api.enforce_platform_access)
+
+    @app.get("/api/ready")
+    def ready() -> dict[str, bool]:
+        return {"ready": True}
+
+    response = TestClient(app).get("/api/ready")
+
+    assert response.status_code == 200
+    assert response.json() == {"ready": True}
+
+
 def test_optional_auth_still_propagates_logged_in_admin(monkeypatch) -> None:
     monkeypatch.setenv("PLATFORM_AUTH_REQUIRED", "false")
     session = _admin_session()

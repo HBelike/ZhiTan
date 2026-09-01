@@ -37,10 +37,11 @@ from src.platform_access.web import (
     platform_auth_required,
     refresh_platform_session_cookie,
 )
+from src.web.readiness import install_readiness_api
 
 
 logger = logging.getLogger(__name__)
-_PUBLIC_API_PATHS = frozenset({"/api/health"})
+_PUBLIC_API_PATHS = frozenset({"/api/health", "/api/ready"})
 _PUBLIC_API_PREFIXES = ("/api/auth/",)
 
 
@@ -262,6 +263,7 @@ def create_app(project_root: Path | None = None) -> FastAPI:
     )
     install_evaluation_api(app)
     install_platform_access_api(app, resolved_project_root)
+    install_readiness_api(app, resolved_project_root)
 
     app.middleware("http")(enforce_platform_access)
 
