@@ -125,9 +125,9 @@ class SkillStarSchedulerWiringTests(unittest.TestCase):
         self.assertIn("self._refresh_skill_stars()", weekly_method.group(0))  # type: ignore[union-attr]
 
     def test_production_scheduler_mounts_skill_volume(self) -> None:
-        compose_source = Path("docker-compose.production.yml").read_text(encoding="utf-8")
+        compose_source = Path("compose.production.yaml").read_text(encoding="utf-8")
         scheduler_section = re.search(
-            r"^  pipeline-scheduler:\n(?P<body>.*?)(?=^  [a-zA-Z0-9_-]+:\n|^networks:)",
+            r"^  pipeline-scheduler:\n(?P<body>.*?)(?=^  [a-zA-Z0-9_-]+:\n|^(?:networks|volumes):)",
             compose_source,
             re.MULTILINE | re.DOTALL,
         )
