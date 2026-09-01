@@ -82,6 +82,9 @@ services:
     logging: *default-logging
 
   career-agent-worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
     image: zhitan-career-api:local
     restart: unless-stopped
     env_file: ${ZHITAN_ENV_FILE:-.env.quickstart}
