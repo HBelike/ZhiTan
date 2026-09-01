@@ -6,13 +6,65 @@ import argparse
 import json
 import subprocess
 import sys
+from http.cookiejar import CookieJar
 from pathlib import Path
 from typing import Any
-
-import requests
+from urllib.error import HTTPError, URLError
+from urllib.request import HTTPCookieProcessor, Request, build_opener
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+
+class _HttpResponse:
+    def __init__(self, status_code: int, body: bytes) -> None:
+        self.status_code = status_code
+        self._body = body
+
+    def json(self) -> Any:
+        try:
+            return json.loads(self._body.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise RuntimeError("HTTP 响应不是有效 JSON") from exc
+
+
+class _StdlibSession:
+    """使用 Python 标准库发起请求，并在登录后保留 Cookie。"""
+
+    def __init__(self) -> None:
+        self._opener = build_opener(HTTPCookieProcessor(CookieJar()))
+
+    def _request(
+        self,
+        method: str,
+        url: str,
+        *,
+        json_payload: dict[str, Any] | None = None,
+        timeout: int = 10,
+    ) -> _HttpResponse:
+        body = None
+        headers: dict[str, str] = {}
+        if json_payload is not None:
+            body = json.dumps(json_payload).encode("utf-8")
+            headers["Content-Type"] = "application/json"
+        request = Request(url, data=body, headers=headers, method=method)
+        try:
+            with self._opener.open(request, timeout=timeout) as response:
+                return _HttpResponse(response.status, response.read())
+        except HTTPError as exc:
+            return _HttpResponse(exc.code, exc.read())
+
+    def get(self, url: str, *, timeout: int = 10) -> _HttpResponse:
+        return self._request("GET", url, timeout=timeout)
+
+    def post(
+        self,
+        url: str,
+        *,
+        json: dict[str, Any],
+        timeout: int = 10,
+    ) -> _HttpResponse:
+        return self._request("POST", url, json_payload=json, timeout=timeout)
 
 
 def _request_json(response: Any, expected_status: int, label: str) -> dict[str, Any]:
@@ -24,7 +76,8 @@ def _request_json(response: Any, expected_status: int, label: str) -> dict[str, 
     return payload
 
 
-def verify_pre_bootstrap(base_url: str, *, session: Any = requests) -> None:
+def verify_pre_bootstrap(base_url: str, *, session: Any | None = None) -> None:
+    session = session or _StdlibSession()
     base = base_url.rstrip("/")
     _request_json(session.get(f"{base}/api/health", timeout=10), 200, "health")
     ready = _request_json(session.get(f"{base}/api/ready", timeout=10), 200, "ready")
@@ -49,8 +102,9 @@ def verify_post_bootstrap(
     *,
     admin_email: str,
     password: str,
-    session: Any = requests,
+    session: Any | None = None,
 ) -> None:
+    session = session or _StdlibSession()
     base = base_url.rstrip("/")
     bootstrap = _request_json(
         session.get(f"{base}/api/auth/bootstrap-status", timeout=10),
@@ -166,11 +220,10 @@ def main() -> int:
                     arguments.base_url,
                     admin_email=arguments.admin_email,
                     password=password,
-                    session=requests.Session(),
                 )
             finally:
                 password = ""
-    except (RuntimeError, requests.RequestException, subprocess.SubprocessError) as exc:
+    except (RuntimeError, URLError, TimeoutError, OSError, subprocess.SubprocessError) as exc:
         print(f"quickstart_verification_failed: {exc}", file=sys.stderr)
         return 1
     print(f"quickstart_{arguments.phase}_verification_ok")

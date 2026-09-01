@@ -15,7 +15,7 @@ This record describes the checks required before publishing a ZhiTan release. It
 
 | Check | Result |
 | --- | --- |
-| Python test suite | 646 passed; 4 deprecation warnings |
+| Python test suite | 647 passed; 4 deprecation warnings |
 | Web UI test suite | 229 passed |
 | Browser extension test suite | 34 passed |
 | Web UI production build | Passed; Vite reported the documented chunk-size warning |
@@ -38,6 +38,7 @@ The quickstart environment was generated from the tracked example without overwr
 | Ephemeral smoke-test admin | Created only with the explicit test-mode guard |
 | Password login and `/api/auth/me` | Passed through the public Web entry point |
 | Relevant service logs | No Python traceback detected |
+| Host-side verifier dependencies | Python standard library only; starts with site packages disabled |
 
 ## Isolation checks
 

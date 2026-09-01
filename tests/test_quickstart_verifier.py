@@ -1,10 +1,16 @@
 from __future__ import annotations
 
+import subprocess
+import sys
 from dataclasses import dataclass
+from pathlib import Path
 
 import pytest
 
 from scripts.verify_quickstart import verify_post_bootstrap, verify_pre_bootstrap
+
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 @dataclass
@@ -26,6 +32,18 @@ class _Session:
 
     def post(self, url: str, **_kwargs) -> _Response:
         return self.responses[("POST", url)]
+
+
+def test_verifier_starts_without_site_packages() -> None:
+    result = subprocess.run(
+        [sys.executable, "-I", "-S", str(ROOT / "scripts" / "verify_quickstart.py"), "--help"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
 
 
 def test_pre_bootstrap_verifies_health_readiness_pending_and_401() -> None:
