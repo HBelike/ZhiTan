@@ -173,7 +173,6 @@ const routeItems = [
 
 const appNavItems = [
   { moduleKey: 'career_assistant', label: '求职助手', icon: '◉', path: '/career', enabled: true },
-  { moduleKey: 'workbench', label: '工作台', icon: '▣', path: '/review', enabled: true },
   { moduleKey: 'interview_library', label: '面经库', icon: '⌘', path: '/interviews', enabled: true },
   { moduleKey: 'job_library', label: '职位库', icon: '⌕', path: '/interviews/jobs', enabled: true },
   { moduleKey: 'skill_library', label: '技能库', icon: '✦', path: '/skills', enabled: true },
@@ -490,7 +489,6 @@ function handleGlobalKeydown(event) {
 
 function isAppNavActive(item) {
   if (!item.path) return false
-  if (item.path === '/review') return currentRoute.value.startsWith('/review')
   if (item.moduleKey === 'career_assistant') return currentRoute.value.startsWith('/career')
   if (item.moduleKey === 'admin_console') return currentRoute.value.startsWith('/admin/')
   return currentRoute.value === item.path
@@ -502,7 +500,6 @@ function canAccessNavItem(item) {
 }
 
 function navItemForRoute(route) {
-  if (route.startsWith('/review')) return appNavItems.find((item) => item.moduleKey === 'workbench')
   if (route === '/career/interview-master') return appNavItems.find((item) => item.moduleKey === 'career_assistant')
   if (route === '/career/online-assessment') return appNavItems.find((item) => item.moduleKey === 'career_assistant')
   if (route === '/interviews/jobs') return appNavItems.find((item) => item.moduleKey === 'job_library')

@@ -3,7 +3,7 @@ export const DEFAULT_APP_ROUTE = '/career'
 const AUTH_ROUTES = new Set(['/login', '/register', '/forgot-password'])
 const ADMIN_ROUTES = new Set(['/admin/modules', '/admin/github', '/admin/prompts', '/admin/model-context'])
 
-export function normalizeAppRoute(pathname, reviewRoutes = []) {
+export function normalizeAppRoute(pathname, _reviewRoutes = []) {
   if (!pathname || pathname === '/') return DEFAULT_APP_ROUTE
   if (AUTH_ROUTES.has(pathname)) return pathname
   if (pathname === '/career') return '/career'
@@ -16,9 +16,6 @@ export function normalizeAppRoute(pathname, reviewRoutes = []) {
   if (pathname === '/admin') return '/admin/modules'
   if (ADMIN_ROUTES.has(pathname)) return pathname
   if (pathname.startsWith('/admin/')) return '/admin/modules'
-  if (pathname.startsWith('/review')) {
-    return reviewRoutes.includes(pathname) ? pathname : '/review'
-  }
   return DEFAULT_APP_ROUTE
 }
 

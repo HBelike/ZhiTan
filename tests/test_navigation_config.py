@@ -52,29 +52,30 @@ class NavigationConfigTests(unittest.TestCase):
         modules = route_modules_for_ui(None, PlatformRole.ADMIN)
         by_key = {item["key"]: item for item in modules}
 
-        self.assertEqual(len([item for item in modules if item["scope"] == "route"]), 7)
+        self.assertEqual(len([item for item in modules if item["scope"] == "route"]), 6)
         self.assertEqual(by_key["job_library"]["label"], "职位库")
         self.assertEqual(by_key["job_library"]["path"], "/interviews/jobs")
         self.assertFalse(by_key["job_library"]["admin_only"])
 
     def test_retired_routes_are_not_returned_but_legacy_settings_are_accepted(self) -> None:
         modules = route_modules_for_ui(
-            {"resume_assistant": False, "evaluation_center": False},
+            {"resume_assistant": False, "evaluation_center": False, "workbench": False},
             PlatformRole.ADMIN,
         )
         keys = {item["key"] for item in modules}
 
         self.assertNotIn("resume_assistant", keys)
         self.assertNotIn("evaluation_center", keys)
-        self.assertEqual(len([item for item in modules if item["scope"] == "route"]), 7)
+        self.assertNotIn("workbench", keys)
+        self.assertEqual(len([item for item in modules if item["scope"] == "route"]), 6)
 
-    def test_default_catalog_contains_seven_routes_and_two_enabled_features(self) -> None:
+    def test_default_catalog_contains_six_routes_and_two_enabled_features(self) -> None:
         modules = route_modules_for_ui(None, PlatformRole.ADMIN)
 
-        self.assertEqual(len(modules), 9)
+        self.assertEqual(len(modules), 8)
         self.assertTrue(all(item["enabled"] for item in modules))
         self.assertEqual(modules[0]["key"], "career_assistant")
-        self.assertEqual(modules[1]["key"], "workbench")
+        self.assertEqual(modules[1]["key"], "interview_library")
         self.assertEqual(modules[-1]["key"], "admin_console")
         self.assertEqual(modules[-1]["path"], "/admin/modules")
 
@@ -114,14 +115,13 @@ class NavigationConfigTests(unittest.TestCase):
             {
                 "career_assistant": False,
                 "career_interview_master": False,
-                "workbench": False,
             },
             PlatformRole.ADMIN,
         )
         by_key = {item["key"]: item for item in modules}
 
         self.assertFalse(by_key["career_assistant"]["enabled"])
-        self.assertFalse(by_key["workbench"]["enabled"])
+        self.assertNotIn("workbench", by_key)
         self.assertTrue(all(item["accessible"] for item in modules if item["scope"] == "route"))
         self.assertFalse(by_key["career_interview_master"]["accessible"])
 
@@ -134,7 +134,7 @@ class NavigationConfigTests(unittest.TestCase):
 
         self.assertFalse(by_key["career_assistant"]["accessible"])
         self.assertFalse(by_key["skill_library"]["accessible"])
-        self.assertTrue(by_key["workbench"]["accessible"])
+        self.assertNotIn("workbench", by_key)
         self.assertFalse(by_key["admin_console"]["accessible"])
 
     def test_admin_console_cannot_be_disabled(self) -> None:
@@ -149,13 +149,13 @@ class NavigationConfigTests(unittest.TestCase):
 
     def test_non_boolean_state_is_rejected(self) -> None:
         with self.assertRaisesRegex(ValueError, "必须是布尔值"):
-            normalize_route_module_settings({"workbench": 1})
+            normalize_route_module_settings({"career_assistant": 1})
 
     def test_user_cannot_save_route_modules(self) -> None:
         service = PlatformAccessService(FakeNavigationRepository())
 
         with self.assertRaises(PermissionError):
-            service.save_route_modules(build_user(PlatformRole.USER), {"workbench": False})
+            service.save_route_modules(build_user(PlatformRole.USER), {"career_assistant": False})
 
     def test_admin_save_is_returned_as_accessible_catalog(self) -> None:
         repository = FakeNavigationRepository()

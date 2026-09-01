@@ -17,14 +17,6 @@ ROUTE_MODULE_DEFINITIONS: tuple[dict[str, Any], ...] = (
         "locked": False,
     },
     {
-        "key": "workbench",
-        "label": "工作台",
-        "path": "/review",
-        "description": "公众号内容审核与媒体工作流",
-        "admin_only": False,
-        "locked": False,
-    },
-    {
         "key": "interview_library",
         "label": "面经库",
         "path": "/interviews",
@@ -91,7 +83,7 @@ DEFAULT_ROUTE_MODULE_SETTINGS: dict[str, bool] = {
 }
 LEGACY_CAREER_TOOLS_KEY = "career_interview_tools"
 CAREER_FEATURE_KEYS = ("career_interview_master", "career_online_assessment")
-RETIRED_ROUTE_MODULE_KEYS = frozenset({"resume_assistant", "evaluation_center"})
+RETIRED_ROUTE_MODULE_KEYS = frozenset({"resume_assistant", "evaluation_center", "workbench"})
 
 
 def normalize_route_module_settings(value: dict[str, object] | None) -> dict[str, bool]:

@@ -29,7 +29,7 @@ test('应用侧栏和登录成功流程都以求职助手为第一入口', async
   const workbenchIndex = source.indexOf("{ moduleKey: 'workbench'")
 
   assert.ok(careerIndex >= 0)
-  assert.ok(workbenchIndex > careerIndex)
+  assert.equal(workbenchIndex, -1)
   assert.match(source, /resolveAuthenticatedRoute\(currentRoute\.value\)/)
 })
 
@@ -38,6 +38,8 @@ test('已卸载页面地址统一回到求职助手', () => {
   assert.equal(normalizeAppRoute('/resume-assistant/new'), '/career')
   assert.equal(normalizeAppRoute('/evaluations'), '/career')
   assert.equal(normalizeAppRoute('/evaluations/history'), '/career')
+  assert.equal(normalizeAppRoute('/review'), '/career')
+  assert.equal(normalizeAppRoute('/review/article'), '/career')
 })
 
 test('登录用户刷新认证页面时统一回到求职首页', () => {
@@ -64,9 +66,9 @@ test('应用启动恢复登录态后立即解析认证页面，避免渲染空�
   )
 })
 
-test('工作台子路由仍按现有目录规范化', () => {
-  assert.equal(normalizeAppRoute('/review/article', ['/review', '/review/article']), '/review/article')
-  assert.equal(normalizeAppRoute('/review/missing', ['/review', '/review/article']), '/review')
+test('工作台路由即使仍出现在旧目录中也统一回到求职助手', () => {
+  assert.equal(normalizeAppRoute('/review/article', ['/review', '/review/article']), '/career')
+  assert.equal(normalizeAppRoute('/review/missing', ['/review', '/review/article']), '/career')
 })
 
 test('管理员无视模块开关并始终拥有页面访问权', () => {

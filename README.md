@@ -25,7 +25,7 @@ ZhiTan brings the fragmented parts of a job search into one self-hosted workspac
 - **Operations and observability** — role-based administration, route switches, model context policies, LangSmith metadata tracing, and a Docker Compose production baseline.
 - **Content workflow** — the repository also retains the original GitHub-trend and WeChat content pipeline as an independent module.
 
-The Resume Assistant and Evaluation Center implementations are retained for future work, but their standalone pages are intentionally not mounted in the current navigation or route catalog.
+The Workbench, Resume Assistant, and Evaluation Center implementations are retained for future work, but their standalone pages are intentionally not mounted in the current navigation or route catalog. Legacy `/review` URLs return to the Career Assistant.
 
 ## Quickstart with Docker Compose
 
