@@ -51,10 +51,8 @@ services:
     logging: *default-logging
 
   career-api:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.api
     image: zhitan-career-api:local
+    pull_policy: never
     restart: unless-stopped
     env_file: ${ZHITAN_ENV_FILE:-.env.quickstart}
     environment: *career-environment
@@ -82,10 +80,8 @@ services:
     logging: *default-logging
 
   career-agent-worker:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.api
     image: zhitan-career-api:local
+    pull_policy: never
     restart: unless-stopped
     env_file: ${ZHITAN_ENV_FILE:-.env.quickstart}
     environment:

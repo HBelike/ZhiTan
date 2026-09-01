@@ -47,7 +47,9 @@ def test_quickstart_waits_for_database_migration_and_runtime_readiness() -> None
     assert services["career-migrate"]["depends_on"]["career-postgres"]["condition"] == "service_healthy"
     assert services["career-api"]["depends_on"]["career-migrate"]["condition"] == "service_completed_successfully"
     assert services["career-agent-worker"]["depends_on"]["career-migrate"]["condition"] == "service_completed_successfully"
-    assert services["career-agent-worker"]["build"]["dockerfile"] == "docker/Dockerfile.api"
+    assert services["career-migrate"]["build"]["dockerfile"] == "docker/Dockerfile.api"
+    assert services["career-api"]["pull_policy"] == "never"
+    assert services["career-agent-worker"]["pull_policy"] == "never"
     assert "/api/ready" in " ".join(services["career-api"]["healthcheck"]["test"])
     assert "check_career_worker_health.py" in " ".join(
         services["career-agent-worker"]["healthcheck"]["test"],
