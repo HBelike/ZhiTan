@@ -2,164 +2,101 @@
 
 [![CI](https://github.com/HBelike/ZhiTan/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/HBelike/ZhiTan/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB.svg)](https://www.python.org/)
-[![Vue](https://img.shields.io/badge/Vue-3-42b883.svg)](https://vuejs.org/)
 
-Open-source AI job-search and resume intelligence workbench.
+ZhiTan is an open-source job-search workspace for candidates. It turns resumes, job descriptions, public interview material, and ongoing conversations into a persistent workflow for job discovery, fit analysis, outreach, and interview preparation.
 
-[简体中文](README.zh-CN.md) · [Documentation](docs/) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
+The core localhost stack starts without model, email, Firecrawl, LangSmith, Docling, or media-provider credentials. Provider-backed actions stay unavailable until configured; account bootstrap, password login, navigation, and system configuration remain usable.
 
-ZhiTan brings the fragmented parts of a job search into one self-hosted workspace: understand a resume, compare it with a role, research current openings, build an interview knowledge base, and prepare for interviews with traceable AI workflows.
+## Core capabilities
 
-![ZhiTan job-search workspace](docs/job-search-ui-preview.png)
+- persistent candidate profiles, resumes, conversations, and job records;
+- job discovery and structured job-library workflows;
+- resume-to-role fit analysis and evidence-backed recommendations;
+- greeting generation and browser-assistant integration;
+- interview-material collection and live interview support;
+- encrypted per-user model credentials and configurable provider profiles.
 
-> ZhiTan is an early-stage project for assisted decision-making. Review generated content before using it, respect third-party platform rules, and never use it to misrepresent experience or bypass an assessment.
+The resume assistant, evaluation center, and workbench implementations remain in the repository for future development, but their public routes are not mounted.
 
-## What ZhiTan does
+## Five-minute localhost Quickstart
 
-- **Career workspace** — conversational resume analysis, role matching, document intake, persistent career context, and configurable model connections.
-- **Job library** — browse current openings through a user-controlled browser assistant, inspect job details, and prepare personalized outreach.
-- **Interview library** — import, organize, search, and retrieve interview experiences with optional pgvector semantic recall.
-- **Interview preparation** — browser-based live interview support, transcript archives, and a user-triggered online-assessment analysis workspace.
-- **Provider-neutral AI** — connect OpenAI-compatible or supported cloud providers without placing API keys in browser code.
-- **Operations and observability** — role-based administration, route switches, model context policies, LangSmith metadata tracing, and a Docker Compose production baseline.
-- **Content workflow** — the repository also retains the original GitHub-trend and WeChat content pipeline as an independent module.
+Requirements: Git, Docker Desktop or Docker Engine with Compose v2, and Python 3.12 or 3.13 for the cross-platform setup helper.
 
-The Workbench, Resume Assistant, and Evaluation Center implementations are retained for future work, but their standalone pages are intentionally not mounted in the current navigation or route catalog. Legacy `/review` URLs return to the Career Assistant.
+Windows PowerShell:
 
-## Quickstart with Docker Compose
+```powershell
+git clone https://github.com/HBelike/ZhiTan.git
+Set-Location ZhiTan
+.\scripts\setup_quickstart.ps1 -NonInteractive
+docker compose --env-file .env.quickstart up -d --build --wait
+docker compose --env-file .env.quickstart exec career-api python scripts/bootstrap_first_admin.py
+Invoke-RestMethod http://127.0.0.1:18081/api/ready
+```
 
-### Prerequisites
-
-- Docker Engine with Docker Compose v2
-- A domain resolving to the host, with inbound ports `80` and `443` available
-- At least one supported model-provider credential, configured after startup or through server-side environment variables
+Linux or macOS:
 
 ```bash
 git clone https://github.com/HBelike/ZhiTan.git
 cd ZhiTan
-cp .env.production.example .env.production
+./scripts/setup_quickstart.sh
+docker compose --env-file .env.quickstart up -d --build --wait
+docker compose --env-file .env.quickstart exec career-api python scripts/bootstrap_first_admin.py
+curl --fail http://127.0.0.1:18081/api/ready
 ```
 
-Edit `.env.production` and, at minimum, replace:
+Open <http://127.0.0.1:18081>, then sign in with the administrator email shown by the bootstrap screen and the password entered in the terminal.
+
+Only Web is published to the host:
 
 ```dotenv
-APP_DOMAIN=jobs.example.com
-PLATFORM_ADMIN_EMAIL=admin@example.com
-CAREER_POSTGRES_PASSWORD=replace-with-a-long-random-password
+ZHITAN_HTTP_PORT=18081
 ```
 
-Then validate and start the stack:
+PostgreSQL, API, migration, and Worker remain inside the Compose network. Compose derives resource names from the clone directory or `COMPOSE_PROJECT_NAME`, so separate clones do not share containers or data volumes.
+
+Stop the instance while retaining data:
 
 ```bash
-docker compose --env-file .env.production -f docker-compose.production.yml config --quiet
-docker compose --env-file .env.production -f docker-compose.production.yml up -d --build
-curl -fsS https://jobs.example.com/api/health
+docker compose --env-file .env.quickstart down
 ```
 
-Create the first administrator from an interactive terminal. The password is never accepted as a command-line argument:
+Permanently delete this instance's Compose volumes:
 
 ```bash
-docker compose --env-file .env.production -f docker-compose.production.yml \
-  exec -it career-api python scripts/bootstrap_first_admin.py
+docker compose --env-file .env.quickstart down -v
 ```
 
-Optional document parsing can be enabled with the `document-processing` profile. See the [production deployment guide](docs/platform_production_deployment.md) before exposing an instance to the internet.
-
-## Local development
-
-ZhiTan uses PostgreSQL for career and identity data, while the independent content workflow retains SQLite for its local state.
-
-```bash
-python -m venv .venv
-python -m pip install -r requirements.txt -r requirements-career-assistant.txt -r requirements-development.txt
-cp .env.career-assistant.example .env.career-assistant
-docker compose --env-file .env.career-assistant -f docker-compose.career-assistant.yml up -d
-python -m alembic upgrade head
-```
-
-Start the API and agent worker in separate terminals:
-
-```bash
-python preview_server.py
-python scripts/run_career_agent_worker.py
-```
-
-On Windows, `scripts\start_dev_backend.ps1` starts both processes. Start the web client separately:
-
-```bash
-npm --prefix web-ui ci
-npm --prefix web-ui run dev
-```
-
-Open `http://127.0.0.1:5173/career`.
-
-Run the main checks with:
-
-```bash
-python -m pytest -q
-npm --prefix web-ui test
-npm --prefix web-ui run build
-npm --prefix browser-extension/job-library test
-```
+`down -v` is destructive. It removes the current Compose project's PostgreSQL, application-data, Skill, and credential-key volumes.
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    Browser[Vue 3 Web UI] --> API[FastAPI API]
-    Extension[MV3 Browser Assistant] <--> Browser
-    API --> Postgres[(PostgreSQL + pgvector)]
-    API --> Agent[LangGraph Agent Worker]
-    Agent --> Models[Model Providers]
-    Agent --> Parsers[Docling / Gotenberg]
-    Scheduler[Content Scheduler] --> SQLite[(SQLite)]
-    Scheduler --> Providers[Media / WeChat Providers]
-    Admin[Admin Console] --> API
+```text
+Browser -> Nginx Web -> FastAPI -> PostgreSQL/pgvector
+                             |
+                             +-> persistent Agent Worker
+
+PostgreSQL healthy -> Alembic migration completed -> API/Worker ready -> Web ready
 ```
 
-| Area | Main paths | Responsibility |
-|---|---|---|
-| Web application | `web-ui/` | Vue routes, career workspace, libraries, admin console |
-| API and access | `src/web/`, `src/platform_access/` | HTTP boundary, identity, sessions, module policy |
-| Career intelligence | `src/career_assistant/` | Agent graph, resume intake, matching, memory, retrieval |
-| Browser assistant | `browser-extension/job-library/` | User-triggered reading of supported browser pages |
-| Content pipeline | `src/tasks/`, `src/providers/`, `src/scheduler/` | GitHub discovery, article/media production, draft delivery |
-| Operations | `migrations/`, `docker/`, `docker-compose*.yml` | Schema history, services, deployment topology |
+- `/api/health` is process liveness.
+- `/api/ready` checks PostgreSQL, Alembic head, and writable application storage.
+- The default stack excludes Caddy, Scheduler, Gotenberg, Docling, and Skill seeds.
+- Production and document services are added through Compose overlays.
 
-Architecture decisions and module-level call chains are documented under [`docs/`](docs/).
+## Documentation
 
-## Configuration and secrets
-
-- Copy an `*.example` file; never commit a real `.env` file.
-- `PLATFORM_ADMIN_EMAIL` controls the bootstrap administrator identity.
-- `ZHITAN_APP_ORIGIN` is injected into production browser-extension packages; no deployment domain is stored in extension source.
-- Model, email, storage, WeChat, and observability credentials are read server-side from environment variables or encrypted provider records.
-- The checked-in examples contain placeholders only. If a real key is ever committed, revoke it before removing it from Git history.
-
-See [`config/app.yaml`](config/app.yaml), [`config/career_assistant.yaml`](config/career_assistant.yaml), and the example environment files for supported settings.
-
-## Browser assistant
-
-The MV3 extension acts as a local bridge to pages the user is already viewing. It does not export cookies or passwords, and assessment support does not write or submit answers. To build a package for your deployment:
-
-```powershell
-$env:ZHITAN_APP_ORIGIN = 'https://jobs.example.com'
-python scripts/package_boss_extension.py
-```
-
-Review the [extension guide](browser-extension/job-library/README.md) and [responsible-use policy](SAFETY.md) before enabling it.
+- [Getting started](docs/getting-started.md)
+- [Local development](docs/local-development.md)
+- [Production deployment](docs/production-deployment.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Contributing](CONTRIBUTING.md)
+- [Security policy](SECURITY.md)
+- [Safety boundaries](SAFETY.md)
 
 ## Project status
 
-ZhiTan is a developer preview. Interfaces, migrations, and deployment assumptions may change. Open an issue for reproducible bugs and discuss substantial feature changes before investing in a large pull request.
-
-## Contributing
-
-Contributions are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md), follow the [Code of Conduct](CODE_OF_CONDUCT.md), and include tests and documentation for behavior changes.
-
-Security issues should follow [SECURITY.md](SECURITY.md), not a public issue.
+ZhiTan is a developer preview. The `master` branch is the current supported source line and is gated by Python, Web, browser-extension, build, Compose, migration, readiness, Worker, and real-login checks.
 
 ## License
 
-Original ZhiTan code is licensed under the [Apache License 2.0](LICENSE). Bundled fonts, referenced implementations, container images, and dependencies retain their respective licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+ZhiTan is licensed under [Apache License 2.0](LICENSE). Third-party packages, container images, and optional integrations retain their own licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

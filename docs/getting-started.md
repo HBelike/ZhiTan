@@ -1,0 +1,84 @@
+# Getting Started
+
+This guide starts an isolated localhost ZhiTan instance with Web, API, Agent Worker, migration, and PostgreSQL/pgvector. No external Provider credentials are required.
+
+## Requirements
+
+- Git;
+- Docker Desktop or Docker Engine with Compose v2.20.3 or newer;
+- Python 3.12 or 3.13 for the setup helper;
+- at least 4 GB of free memory for the core stack.
+
+## Windows PowerShell
+
+```powershell
+git clone https://github.com/HBelike/ZhiTan.git
+Set-Location ZhiTan
+.\scripts\setup_quickstart.ps1 -NonInteractive
+docker compose --env-file .env.quickstart up -d --build --wait
+```
+
+## Linux or macOS
+
+```bash
+git clone https://github.com/HBelike/ZhiTan.git
+cd ZhiTan
+./scripts/setup_quickstart.sh
+docker compose --env-file .env.quickstart up -d --build --wait
+```
+
+The helper creates `.env.quickstart` with URL-safe random secrets and refuses to overwrite it. The only published host port is:
+
+```dotenv
+ZHITAN_HTTP_PORT=18081
+```
+
+To prepare the file manually, copy `.env.quickstart.example` to `.env.quickstart`, replace both `replace-with-setup-generated-value` entries with independent URL-safe random values, and keep the file outside Git.
+
+## Verify readiness
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:18081/api/health
+Invoke-RestMethod http://127.0.0.1:18081/api/ready
+docker compose --env-file .env.quickstart ps
+```
+
+```bash
+curl --fail http://127.0.0.1:18081/api/health
+curl --fail http://127.0.0.1:18081/api/ready
+docker compose --env-file .env.quickstart ps
+```
+
+`/api/ready` must report `ready: true`. The migration service should be exited with code 0; API, Worker, Web, and PostgreSQL should be healthy.
+
+## Create the first administrator
+
+Run the interactive command from the repository root:
+
+```bash
+docker compose --env-file .env.quickstart exec career-api python scripts/bootstrap_first_admin.py
+```
+
+The script reads the display name and password from the terminal. It does not accept a password argument. Open <http://127.0.0.1:18081> and sign in using the administrator email shown on the page.
+
+Public registration, email-code login, and password reset are hidden until a complete email Provider configuration exists. Password login works without any external Provider.
+
+## Stop or remove the instance
+
+Stop containers and retain all named volumes:
+
+```bash
+docker compose --env-file .env.quickstart down
+```
+
+Delete containers and this Compose project's data volumes:
+
+```bash
+docker compose --env-file .env.quickstart down -v
+```
+
+The second command permanently deletes PostgreSQL data, application data, saved Skills, and the managed credential key for this instance.
+
+## Optional Providers
+
+Provider keys are configured after login or in the ignored environment file, depending on the integration. Missing model, Firecrawl, email, LangSmith, document, and media credentials do not prevent the core stack from becoming ready. Calls that require a missing Provider return a configuration error instead of a fake success.

@@ -1,64 +1,64 @@
 # Contributing to ZhiTan
 
-Thank you for helping improve ZhiTan. Small, focused changes with clear evidence are the easiest to review and maintain.
+Thank you for helping improve ZhiTan. Keep changes focused, evidence-backed, and safe for a public clean checkout.
 
-## Before you start
+## Before starting
 
 - Search existing issues and pull requests.
-- Open an issue before a large feature, schema change, new external service, or user-facing workflow change.
-- Do not include real resumes, interview transcripts, account data, cookies, server addresses, or credentials in issues, fixtures, screenshots, commits, or logs.
-- Read [SAFETY.md](SAFETY.md) before changing browser automation, interview support, or assessment features.
+- Discuss large features, schema changes, and new external services before implementation.
+- Never commit real resumes, transcripts, cookies, server addresses, API keys, passwords, or production logs.
+- Read [SAFETY.md](SAFETY.md) before changing browser automation, interview support, or assessment behavior.
 
 ## Development setup
 
-Use Python 3.11 or newer and Node.js 22.
+Use the tested setup script:
 
-```bash
-python -m venv .venv
-python -m pip install -r requirements.txt -r requirements-career-assistant.txt -r requirements-development.txt
-npm --prefix web-ui ci
-cp .env.career-assistant.example .env.career-assistant
-docker compose --env-file .env.career-assistant -f docker-compose.career-assistant.yml up -d
-python -m alembic upgrade head
+```powershell
+.\scripts\setup_dev.ps1
 ```
 
-Never put a real secret in an example environment file. Local `.env*` files are ignored.
-
-## Making a change
-
-1. Keep one pull request focused on one problem.
-2. Add a failing test for behavior changes, then implement the smallest coherent fix.
-3. Preserve existing module boundaries. Do not couple the independent content workflow to the career database without an approved design.
-4. Update the relevant `docs/` module note when a call chain, dependency, operational assumption, or boundary changes.
-5. Use clear commit messages such as `fix: reject stale assessment results` or `docs: clarify provider setup`.
-
-## Verification
-
-Run focused tests while developing, then run the full offline baseline before opening a pull request:
-
 ```bash
-python -m pytest -q
+./scripts/setup_dev.sh
+```
+
+Both scripts create a repository-local `.venv`, install `requirements.lock.txt`, run `npm ci`, generate an ignored development environment file, and check the documented ports. Manual equivalents are in [docs/local-development.md](docs/local-development.md).
+
+## Change discipline
+
+1. Add a failing test for behavior changes.
+2. Implement the smallest coherent change.
+3. Run focused tests and the related regression suite.
+4. Update documentation when a call chain, dependency, operational assumption, or boundary changes.
+5. Use clear commits such as `fix: reject stale assessment results` or `docs: clarify provider setup`.
+
+Tests and fixtures must use tracked repository files. They may not read ignored Skill exports, user-level plugin caches, another clone's virtual environment, or another Compose project's volumes.
+
+## Full verification
+
+Windows:
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q
 npm --prefix web-ui test
 npm --prefix web-ui run build
 npm --prefix browser-extension/job-library test
+docker compose --env-file .env.quickstart config --quiet
 ```
 
-If a test requires a paid or authenticated external service, explain that requirement and provide an offline contract test. Do not weaken assertions to hide a failure.
+Linux or macOS:
+
+```bash
+.venv/bin/python -m pytest -q
+npm --prefix web-ui test
+npm --prefix web-ui run build
+npm --prefix browser-extension/job-library test
+docker compose --env-file .env.quickstart config --quiet
+```
+
+Paid or authenticated Provider tests belong in the manual Provider workflow. Every required pull-request check must run without external credentials.
 
 ## Pull requests
 
-A useful pull request includes:
+Include the user problem, implementation boundary, notable tradeoffs, commands/results, screenshots for visible UI changes, migration notes for schema changes, and privacy/documentation impact.
 
-- the user problem and intended outcome;
-- the implementation boundary and notable tradeoffs;
-- test commands and results;
-- screenshots for visible UI changes;
-- migration and rollback notes for schema changes;
-- privacy, safety, and documentation impact;
-- a linked issue when one exists.
-
-Maintainers may ask to split broad changes. Reviews check both repository conventions and the stated problem, not only whether the code runs.
-
-## Licensing
-
-By submitting a contribution, you agree that it is licensed under the repository's Apache-2.0 license. You must have the right to contribute the code and must preserve required third-party notices.
+By contributing, you agree that your contribution is licensed under the repository's Apache-2.0 license and that you have the right to submit it.

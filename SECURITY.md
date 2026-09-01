@@ -23,4 +23,6 @@ Please avoid destructive testing, persistence, denial of service, access to data
 
 Operators are responsible for TLS, host patching, database backups, access controls, provider-account permissions, and secret rotation. Keep authentication enabled on public instances, use a unique database password and credential-encryption key, configure the administrator email through the environment, and never expose PostgreSQL or document-processing services directly to the internet.
 
+Follow [docs/production-deployment.md](docs/production-deployment.md) for the current topology and [docs/getting-started.md](docs/getting-started.md) for isolated localhost operation. Historical files under `docs/archive/` are not supported deployment instructions.
+
 If a credential reaches Git history, logs, an issue, or a build artifact, revoke and rotate it immediately. Removing the text alone does not make the credential safe again.

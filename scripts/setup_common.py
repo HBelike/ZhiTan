@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 import secrets
 import socket
@@ -114,10 +115,12 @@ def setup_development() -> None:
     database_name = "zhitan_dev"
     database_user = "zhitan_dev"
     database_port = 54329
+    project_suffix = hashlib.sha256(str(PROJECT_ROOT).encode("utf-8")).hexdigest()[:8]
     destination = _ensure_env(
         ".env.career-assistant.example",
         ".env.career-assistant",
         {
+            "COMPOSE_PROJECT_NAME": f"zhitan-dev-{project_suffix}",
             "CAREER_POSTGRES_DB": database_name,
             "CAREER_POSTGRES_USER": database_user,
             "CAREER_POSTGRES_PASSWORD": password,
