@@ -10,8 +10,9 @@ import hashlib
 from datetime import UTC, datetime
 from typing import Protocol
 
-from src.platform_access.contracts import PLATFORM_ADMIN_EMAIL, PlatformUser
+from src.platform_access.contracts import PlatformUser
 from src.platform_access.security import hash_password, normalize_email
+from src.platform_access.settings import load_platform_admin_email
 
 
 class FirstAdminBootstrapError(RuntimeError):
@@ -52,9 +53,10 @@ def bootstrap_first_admin(
     ``create_first_admin`` 内部仍会再次加锁检查，避免两个管理员终端并发执行时出现竞态。
     """
 
+    admin_email = load_platform_admin_email()
     normalized_email = normalize_email(email)
-    if normalized_email != PLATFORM_ADMIN_EMAIL:
-        raise FirstAdminBootstrapError(f"管理员邮箱必须是 {PLATFORM_ADMIN_EMAIL}")
+    if normalized_email != admin_email:
+        raise FirstAdminBootstrapError(f"管理员邮箱必须是 {admin_email}")
     if repository.has_active_admin():
         raise FirstAdminBootstrapError("管理员已初始化，请使用已有管理员账号登录")
     if repository.find_user_by_email(normalized_email) is not None:

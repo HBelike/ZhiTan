@@ -25,8 +25,8 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from src.career_assistant.persistence.database import CareerDatabase
 from src.platform_access.bootstrap import FirstAdminBootstrapError, bootstrap_first_admin
-from src.platform_access.contracts import PLATFORM_ADMIN_EMAIL
 from src.platform_access.repository import PlatformAccessRepository
+from src.platform_access.settings import load_platform_admin_email
 
 
 def main() -> int:
@@ -50,7 +50,8 @@ def main() -> int:
     confirmed_password = ""
     try:
         database = CareerDatabase(database_url)
-        repository = PlatformAccessRepository(database)
+        admin_email = load_platform_admin_email()
+        repository = PlatformAccessRepository(database, admin_email=admin_email)
         if arguments.check:
             if repository.has_active_admin():
                 print("first_admin_bootstrap_already_initialized")
@@ -59,8 +60,8 @@ def main() -> int:
             return 0
 
         _require_interactive_terminal()
-        print(f"将创建唯一管理员 {PLATFORM_ADMIN_EMAIL}。密码不会显示、记录或作为命令行参数传递。")
-        email = PLATFORM_ADMIN_EMAIL
+        print(f"将创建唯一管理员 {admin_email}。密码不会显示、记录或作为命令行参数传递。")
+        email = admin_email
         display_name = _prompt_required("管理员显示名称: ")
         password = getpass.getpass("管理员密码（至少 8 位）: ")
         confirmed_password = getpass.getpass("再次输入管理员密码: ")

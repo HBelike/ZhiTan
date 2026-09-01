@@ -27,6 +27,7 @@ from src.platform_access.email_delivery import ResendEmailDelivery, ResendEmailS
 from src.platform_access.repository import PlatformAccessRepository
 from src.platform_access.pipeline_runner import ManualPipelineRunner
 from src.platform_access.service import AuthenticatedSession, PlatformAccessService
+from src.platform_access.settings import load_platform_access_settings
 from src.repositories.weekly_ranking_repository import WeeklyRankingRepository
 
 
@@ -40,13 +41,13 @@ def platform_auth_required() -> bool:
     默认关闭，保证本地既有验收脚本无需先创建账号；生产 Compose 必须显式设为 true。
     """
 
-    return _read_boolean_environment("PLATFORM_AUTH_REQUIRED", default=False)
+    return load_platform_access_settings().auth_required
 
 
 def public_registration_enabled() -> bool:
     """控制是否允许首个管理员之外的公开注册。"""
 
-    return _read_boolean_environment("PLATFORM_PUBLIC_REGISTRATION_ENABLED", default=True)
+    return load_platform_access_settings().public_registration_enabled
 
 
 def platform_cli_bootstrap_only() -> bool:
@@ -56,7 +57,7 @@ def platform_cli_bootstrap_only() -> bool:
     本地开发默认关闭，继续保留已有邮箱验证码初始化链路。
     """
 
-    return _read_boolean_environment("PLATFORM_CLI_BOOTSTRAP_ONLY", default=False)
+    return load_platform_access_settings().cli_bootstrap_only
 
 
 class SendRegistrationCodeRequest(BaseModel):
@@ -157,6 +158,7 @@ def get_platform_access_service(request: Request) -> PlatformAccessService:
         if existing is not None:
             return existing
         _load_environment(request.app.state.platform_access_project_root)
+        settings = load_platform_access_settings()
         database_url = os.getenv("CAREER_DATABASE_URL", "").strip()
         if not database_url:
             raise HTTPException(
@@ -173,9 +175,10 @@ def get_platform_access_service(request: Request) -> PlatformAccessService:
                     ResendEmailSettings(api_key=resend_api_key, from_address=resend_from_address),
                 )
             service = PlatformAccessService(
-                PlatformAccessRepository(database),
+                PlatformAccessRepository(database, admin_email=settings.admin_email),
                 email_delivery=email_delivery,
                 verification_secret=os.getenv("PLATFORM_EMAIL_CODE_SECRET", ""),
+                admin_email=settings.admin_email,
             )
         except (OSError, SQLAlchemyError, ValueError) as exc:
             raise HTTPException(
@@ -235,10 +238,17 @@ def bootstrap_status(request: Request) -> dict[str, object]:
     """让登录页判断显示初始化还是登录表单。"""
 
     service = get_platform_access_service(request)
+    settings = load_platform_access_settings()
     return {
         "requires_bootstrap": service.requires_bootstrap(),
-        "public_registration_enabled": public_registration_enabled(),
-        "cli_bootstrap_only": platform_cli_bootstrap_only(),
+        "admin_email": settings.admin_email,
+        "public_registration_enabled": settings.public_registration_enabled,
+        "email_auth_enabled": settings.email_auth_enabled,
+        "cli_bootstrap_only": settings.cli_bootstrap_only,
+        "bootstrap_command": os.environ.get(
+            "ZHITAN_BOOTSTRAP_COMMAND",
+            "docker compose --env-file .env.quickstart exec career-api python scripts/bootstrap_first_admin.py",
+        ).strip(),
     }
 
 
@@ -747,17 +757,3 @@ def _load_environment(project_root: Path) -> None:
     except ImportError as exc:
         raise RuntimeError("检测到 .env.career-assistant，但未安装 python-dotenv") from exc
     load_dotenv(dotenv_path=environment_path, override=False)
-
-
-def _read_boolean_environment(name: str, *, default: bool) -> bool:
-    """以严格、可读的方式读取生产安全开关。"""
-
-    value = os.getenv(name)
-    if value is None or not value.strip():
-        return default
-    normalized = value.strip().lower()
-    if normalized in {"1", "true", "yes", "on"}:
-        return True
-    if normalized in {"0", "false", "no", "off"}:
-        return False
-    raise ValueError(f"{name} 必须是 true 或 false")

@@ -23,9 +23,13 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.platform_access.bootstrap import FirstAdminBootstrapError, bootstrap_first_admin
-from src.platform_access.contracts import PLATFORM_ADMIN_EMAIL, PlatformRole, PlatformUser
+from src.platform_access.contracts import PlatformRole, PlatformUser
 from src.platform_access.service import PlatformAccessService
+from src.platform_access.settings import load_platform_admin_email
 from src.platform_access.web import router
+
+
+ADMIN_EMAIL = load_platform_admin_email()
 
 
 class FakeFirstAdminRepository:
@@ -76,7 +80,7 @@ def _fake_user() -> PlatformUser:
         organization_id=UUID("22222222-2222-2222-2222-222222222222"),
         username="admin-test",
         display_name="部署验证管理员",
-        email=PLATFORM_ADMIN_EMAIL,
+        email=ADMIN_EMAIL,
         email_verified_at=now,
         role=PlatformRole.ADMIN,
         is_active=True,
@@ -99,13 +103,13 @@ def _verify_bootstrap_use_case() -> None:
     repository = FakeFirstAdminRepository()
     user = bootstrap_first_admin(
         repository,
-        email=PLATFORM_ADMIN_EMAIL.upper(),
+        email=ADMIN_EMAIL.upper(),
         display_name="部署管理员",
         password="safe-password-123",
     )
     assert user.role is PlatformRole.ADMIN
     assert repository.created is not None
-    assert repository.created["email"] == PLATFORM_ADMIN_EMAIL
+    assert repository.created["email"] == ADMIN_EMAIL
     assert str(repository.created["username"]).startswith("admin-")
     assert str(repository.created["password_hash"]).startswith("scrypt$")
     assert repository.created["password_hash"] != "safe-password-123"
@@ -118,7 +122,7 @@ def _verify_bootstrap_use_case() -> None:
         try:
             bootstrap_first_admin(
                 rejected_repository,
-                email=PLATFORM_ADMIN_EMAIL,
+                email=ADMIN_EMAIL,
                 display_name="部署管理员",
                 password="safe-password-123",
             )
@@ -135,7 +139,7 @@ def _verify_bootstrap_use_case() -> None:
             password="safe-password-123",
         )
     except FirstAdminBootstrapError as exc:
-        assert PLATFORM_ADMIN_EMAIL in str(exc)
+        assert ADMIN_EMAIL in str(exc)
     else:
         raise AssertionError("非固定邮箱不应被创建为管理员")
 
@@ -147,7 +151,7 @@ def _verify_reserved_admin_email_cannot_register_as_user() -> None:
     service = PlatformAccessService(repository)
     try:
         service.send_registration_code(
-            email=PLATFORM_ADMIN_EMAIL,
+            email=ADMIN_EMAIL,
             display_name="错误普通用户",
             password="safe-password-123",
         )
@@ -162,7 +166,7 @@ def _verify_reserved_admin_email_cannot_register_as_user() -> None:
         role=PlatformRole.USER,
     )
     try:
-        service.send_bind_email_code(user=ordinary_user, email=PLATFORM_ADMIN_EMAIL)
+        service.send_bind_email_code(user=ordinary_user, email=ADMIN_EMAIL)
     except ValueError as exc:
         assert "管理员专用" in str(exc)
     else:
@@ -191,8 +195,11 @@ def _verify_cli_only_web_guard() -> None:
                 assert status_response.status_code == 200
                 assert status_response.json() == {
                     "requires_bootstrap": True,
+                    "admin_email": ADMIN_EMAIL,
                     "public_registration_enabled": True,
+                    "email_auth_enabled": False,
                     "cli_bootstrap_only": True,
+                    "bootstrap_command": "docker compose --env-file .env.quickstart exec career-api python scripts/bootstrap_first_admin.py",
                 }
                 send_response = client.post(
                     "/api/auth/bootstrap/send-code",

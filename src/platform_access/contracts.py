@@ -7,12 +7,6 @@ from datetime import datetime
 from enum import Enum
 from uuid import UUID
 
-from src.platform_access.settings import load_platform_admin_email
-
-
-PLATFORM_ADMIN_EMAIL = load_platform_admin_email()
-
-
 class PlatformRole(str, Enum):
     """平台角色只区分固定管理员与普通用户。"""
 

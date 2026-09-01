@@ -10,15 +10,17 @@ from sqlalchemy import text
 
 from src.career_assistant.persistence.conversation_repository import DEFAULT_ORGANIZATION_ID
 from src.career_assistant.persistence.database import CareerDatabase
-from src.platform_access.contracts import PLATFORM_ADMIN_EMAIL, PlatformRole, PlatformUser, SessionResolution
+from src.platform_access.contracts import PlatformRole, PlatformUser, SessionResolution
 from src.platform_access.security import digest_session_token, normalize_email, normalize_username
+from src.platform_access.settings import load_platform_admin_email
 
 
 class PlatformAccessRepository:
     """封装平台访问数据，所有写操作在独立事务中完成。"""
 
-    def __init__(self, database: CareerDatabase) -> None:
+    def __init__(self, database: CareerDatabase, *, admin_email: str | None = None) -> None:
         self._database = database
+        self._admin_email = admin_email or load_platform_admin_email()
 
     def has_active_users(self) -> bool:
         """判断系统是否存在任意可登录账号。"""
@@ -53,7 +55,7 @@ class PlatformAccessRepository:
                         )
                         """,
                     ),
-                    {"email": PLATFORM_ADMIN_EMAIL},
+                    {"email": self._admin_email},
                 ).scalar_one(),
             )
 
@@ -72,8 +74,8 @@ class PlatformAccessRepository:
         normalized_username = normalize_username(username)
         normalized_display_name = display_name.strip() or normalized_username
         normalized_email = normalize_email(email) if email else None
-        if normalized_email != PLATFORM_ADMIN_EMAIL:
-            raise ValueError(f"管理员邮箱必须是 {PLATFORM_ADMIN_EMAIL}")
+        if normalized_email != self._admin_email:
+            raise ValueError(f"管理员邮箱必须是 {self._admin_email}")
         if len(normalized_display_name) > 120:
             raise ValueError("显示名称不能超过 120 个字符")
 
@@ -172,7 +174,7 @@ class PlatformAccessRepository:
 
         user_id = uuid4()
         normalized_email = normalize_email(email)
-        if normalized_email == PLATFORM_ADMIN_EMAIL:
+        if normalized_email == self._admin_email:
             raise ValueError("管理员专用邮箱不能注册为普通用户")
         normalized_display_name = display_name.strip() or normalized_email.split("@", 1)[0]
         if len(normalized_display_name) > 120:

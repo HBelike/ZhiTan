@@ -6,13 +6,14 @@ import unittest
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from src.platform_access.contracts import PLATFORM_ADMIN_EMAIL, PlatformRole, PlatformUser
+from src.platform_access.contracts import PlatformRole, PlatformUser
 from src.platform_access.navigation_config import (
     DEFAULT_ROUTE_MODULE_SETTINGS,
     normalize_route_module_settings,
     route_modules_for_ui,
 )
 from src.platform_access.service import PlatformAccessService
+from src.platform_access.settings import load_platform_admin_email
 
 
 class FakeNavigationRepository:
@@ -46,7 +47,7 @@ def build_user(role: PlatformRole) -> PlatformUser:
 class NavigationConfigTests(unittest.TestCase):
     def test_role_model_only_contains_user_and_admin(self) -> None:
         self.assertEqual({role.value for role in PlatformRole}, {"user", "admin"})
-        self.assertEqual(PLATFORM_ADMIN_EMAIL, "admin@example.com")
+        self.assertEqual(load_platform_admin_email({}), "admin@example.com")
 
     def test_default_catalog_contains_job_library_as_top_level_module(self) -> None:
         modules = route_modules_for_ui(None, PlatformRole.ADMIN)
