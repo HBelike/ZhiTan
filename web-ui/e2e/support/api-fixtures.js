@@ -55,7 +55,16 @@ export async function installApiFixtures(page) {
     const path = url.pathname
 
     if (path === '/api/auth/bootstrap-status') {
-      await route.fulfill({ json: { requires_bootstrap: false, public_registration_enabled: true } })
+      await route.fulfill({
+        json: {
+          requires_bootstrap: false,
+          admin_email: 'admin@example.com',
+          public_registration_enabled: true,
+          email_auth_enabled: true,
+          cli_bootstrap_only: false,
+          bootstrap_command: 'docker compose --env-file .env.quickstart exec career-api python scripts/bootstrap_first_admin.py'
+        }
+      })
       return
     }
     if (path === '/api/career/model-profiles') {

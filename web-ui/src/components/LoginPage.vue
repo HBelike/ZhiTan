@@ -8,7 +8,10 @@ const submitting = ref(false)
 const sendingLoginCode = ref(false)
 const requiresBootstrap = ref(false)
 const publicRegistrationEnabled = ref(true)
+const emailAuthEnabled = ref(false)
 const cliBootstrapOnly = ref(false)
+const adminEmail = ref('')
+const bootstrapCommand = ref('')
 const mode = ref('login')
 const loginMethod = ref('code')
 const verificationStage = ref(false)
@@ -21,7 +24,7 @@ const confirmPassword = ref('')
 const verificationCode = ref('')
 const errorMessage = ref('')
 const successMessage = ref('')
-const requiresCliBootstrap = computed(() => requiresBootstrap.value && cliBootstrapOnly.value)
+const requiresCliBootstrap = computed(() => requiresBootstrap.value && (cliBootstrapOnly.value || !emailAuthEnabled.value))
 
 const careerCapabilities = [
   { label: '简历分析', number: '01', icon: 'resume' },
@@ -89,12 +92,19 @@ async function loadBootstrapStatus() {
     const payload = await response.json()
     requiresBootstrap.value = Boolean(payload.requires_bootstrap)
     publicRegistrationEnabled.value = payload.public_registration_enabled !== false
+    emailAuthEnabled.value = Boolean(payload.email_auth_enabled)
     cliBootstrapOnly.value = Boolean(payload.cli_bootstrap_only)
+    adminEmail.value = String(payload.admin_email || '')
+    bootstrapCommand.value = String(payload.bootstrap_command || '')
+    if (!emailAuthEnabled.value) loginMethod.value = 'password'
     if (requiresBootstrap.value) {
       mode.value = 'register'
       replaceModeInLocation('register')
     }
     if (!requiresBootstrap.value && !publicRegistrationEnabled.value && mode.value === 'register') {
+      switchMode('login', { replace: true })
+    }
+    if (!emailAuthEnabled.value && mode.value === 'reset') {
       switchMode('login', { replace: true })
     }
   } catch (error) {
@@ -130,6 +140,7 @@ function replaceModeInLocation(nextMode) {
 
 function switchMode(nextMode, { replace = false } = {}) {
   if (nextMode === 'register' && !publicRegistrationEnabled.value && !requiresBootstrap.value) return
+  if (!emailAuthEnabled.value && nextMode === 'reset') return
   mode.value = nextMode
   verificationStage.value = false
   challengeId.value = ''
@@ -472,14 +483,14 @@ function readableError(error, fallback) {
         <template v-else>
           <section v-if="requiresCliBootstrap" class="login-cli-bootstrap" aria-live="polite">
             <strong>管理员尚未初始化</strong>
-            <p>请登录部署服务器后，在项目目录执行：</p>
-            <code>docker compose --env-file .env.production -f docker-compose.production.yml exec -it career-api python scripts/bootstrap_first_admin.py</code>
+            <p>请在项目目录执行以下命令，初始化邮箱为 <b>{{ adminEmail }}</b>：</p>
+            <code>{{ bootstrapCommand }}</code>
             <p class="login-hint">命令会在终端中安全读取邮箱、显示名称和密码；请勿添加 <code>-T</code>，也不要把密码写入命令行。</p>
           </section>
 
           <template v-else>
             <div
-              v-if="mode === 'login'"
+              v-if="emailAuthEnabled && mode === 'login'"
               class="login-method-tabs"
               role="tablist"
               aria-label="选择登录方式"
@@ -522,7 +533,7 @@ function readableError(error, fallback) {
                   <div class="login-field">
                     <div class="login-label-row">
                       <label for="login-password">密码</label>
-                      <button type="button" @click="switchMode('reset')">忘记密码？</button>
+                      <button v-if="emailAuthEnabled" type="button" @click="switchMode('reset')">忘记密码？</button>
                     </div>
                     <input id="login-password" v-model="password" type="password" autocomplete="current-password" placeholder="输入密码" />
                   </div>
@@ -586,7 +597,7 @@ function readableError(error, fallback) {
               <button class="login-submit" type="submit" :disabled="submitting">{{ submitting ? '正在处理中…' : primaryLabel }}</button>
             </form>
 
-            <div v-if="!requiresBootstrap && mode === 'login' && publicRegistrationEnabled" class="login-register-entry">
+            <div v-if="!requiresBootstrap && mode === 'login' && publicRegistrationEnabled && emailAuthEnabled" class="login-register-entry">
               <span>没有账号？</span>
               <button type="button" @click="switchMode('register')">创建账号</button>
             </div>
@@ -606,7 +617,7 @@ function readableError(error, fallback) {
         </template>
 
         <p v-if="requiresCliBootstrap" class="login-footer">管理员完成服务器端初始化后，刷新本页并使用初始化邮箱登录。</p>
-        <p v-else-if="mode !== 'login'" class="login-footer">验证码有效期为 10 分钟；注册后即绑定该邮箱，后续可使用验证码找回密码。</p>
+        <p v-else-if="emailAuthEnabled && mode !== 'login'" class="login-footer">验证码有效期为 10 分钟；注册后即绑定该邮箱，后续可使用验证码找回密码。</p>
       </div>
     </section>
   </main>

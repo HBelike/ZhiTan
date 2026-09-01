@@ -28,6 +28,22 @@ test('登录页以求职助手和五段 Agent 执行轨介绍核心能力', () =
   assert.doesNotMatch(loginPageVue, /login-capability-detail|全流程协同/)
 })
 
+test('首次启动命令和管理员邮箱来自后端状态而不是生产硬编码', () => {
+  assert.match(loginPageVue, /const adminEmail = ref\(''\)/)
+  assert.match(loginPageVue, /const bootstrapCommand = ref\(''\)/)
+  assert.match(loginPageVue, /adminEmail\.value = String\(payload\.admin_email/)
+  assert.match(loginPageVue, /bootstrapCommand\.value = String\(payload\.bootstrap_command/)
+  assert.match(loginPageVue, /<code>\{\{ bootstrapCommand \}\}<\/code>/)
+  assert.doesNotMatch(loginPageVue, /docker-compose\.production\.yml/)
+})
+
+test('未配置邮件服务时只保留密码登录并隐藏找回入口', () => {
+  assert.match(loginPageVue, /const emailAuthEnabled = ref\(false\)/)
+  assert.match(loginPageVue, /v-if="emailAuthEnabled && mode === 'login'"[\s\S]*class="login-method-tabs"/)
+  assert.match(loginPageVue, /v-if="emailAuthEnabled" type="button" @click="switchMode\('reset'\)"/)
+  assert.match(loginPageVue, /if \(!emailAuthEnabled\.value && nextMode === 'reset'\) return/)
+})
+
 test('求职 Agent 执行轨使用有序列表和一条连续直线', () => {
   assert.match(
     loginPageVue,
