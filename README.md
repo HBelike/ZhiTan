@@ -89,7 +89,7 @@ curl --fail http://127.0.0.1:18081/api/ready
 
 Open <http://127.0.0.1:18081>, then sign in with the administrator email shown by the bootstrap screen and the password entered in the terminal.
 
-Quickstart defaults to CLI administrator bootstrap and password login. Production-style email-code login, public registration, and password recovery appear only after `PLATFORM_PUBLIC_REGISTRATION_ENABLED=true` and a complete email Provider configuration; see [Getting started](docs/getting-started.md#enable-production-style-registration-locally). If an existing local administrator password is unavailable, reset it without deleting data:
+Quickstart enables the public-registration policy, but email-code login, registration, and password recovery appear only after a complete email Provider configuration exists; see [Getting started](docs/getting-started.md#enable-production-style-registration-locally). CLI administrator bootstrap and password login remain available without email. If an existing local administrator password is unavailable, reset it without deleting data:
 
 ```bash
 docker compose --env-file .env.quickstart exec career-api python scripts/bootstrap_first_admin.py --reset-password
@@ -113,6 +113,10 @@ RESEND_FROM_ADDRESS=ZhiTan <no-reply@notifications.your-domain.example>
 ```
 
 Keep the setup-generated `PLATFORM_EMAIL_CODE_SECRET`, then recreate `career-api` as described in [Getting started](docs/getting-started.md#enable-production-style-registration-locally). Never use a maintainer's key, publish a live key, or commit `.env.quickstart`; each deployment must use credentials owned by its operator. If delivery later stops, existing users can still use password login and the operator can reset the administrator password from the server terminal.
+
+### Configured models are usable by default
+
+Quickstart sets `CAREER_ALLOW_PAID_PROFILES=true` and `CAREER_ENABLE_LOCAL_OLLAMA_PROFILE=true`. A saved DeepSeek or other paid profile is therefore not blocked merely because it is paid, and an operator-configured Ollama profile is allowed. This does not call a model automatically: a user must still select or trigger a model-backed action, and missing credentials continue to produce a clear configuration status. Operators who require a no-paid-usage policy can explicitly set either switch to `false` in their ignored environment file.
 
 Only Web is published to the host:
 

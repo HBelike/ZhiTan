@@ -73,7 +73,7 @@ The command requires two matching password entries plus an explicit `RESET` conf
 
 ## Enable production-style registration locally
 
-The Quickstart keeps public registration disabled by default. Email delivery is optional: the CLI-created administrator and password login do not require an email Provider.
+The Quickstart enables the public-registration policy by default. Email delivery is still optional: registration UI is exposed only when the complete email Provider configuration below exists, while the CLI-created administrator and password login do not require an email Provider.
 
 To reproduce the production login screen, first prepare an operator-owned Resend account:
 
@@ -103,6 +103,17 @@ curl --fail http://127.0.0.1:18081/api/auth/bootstrap-status
 The response must contain `"public_registration_enabled":true` and `"email_auth_enabled":true`. User accounts remain local to this PostgreSQL volume; production accounts are never copied from Git.
 
 If Resend is temporarily unavailable, existing users are not locked out. Password login remains available, and the administrator password can be reset with the interactive `bootstrap_first_admin.py --reset-password` command documented above.
+
+## Model policy defaults
+
+Quickstart enables operator-configured paid and local model profiles:
+
+```dotenv
+CAREER_ALLOW_PAID_PROFILES=true
+CAREER_ENABLE_LOCAL_OLLAMA_PROFILE=true
+```
+
+These switches remove policy-only blocking; they do not call a model automatically and do not make a profile ready without its required credential or endpoint. Set a switch to `false` only when the deployment operator intentionally prohibits that class of model.
 
 ## Stop or remove the instance
 

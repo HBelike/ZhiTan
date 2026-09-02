@@ -98,3 +98,11 @@ def test_email_registration_docs_keep_a_provider_free_login_path() -> None:
     assert "Email delivery is optional" in text
     assert "Password login remains available" in text
     assert "bootstrap_first_admin.py --reset-password" in text
+
+
+def test_operator_configured_model_profiles_are_not_blocked_by_default() -> None:
+    text = _active_text()
+
+    assert "CAREER_ALLOW_PAID_PROFILES=true" in text
+    assert "CAREER_ENABLE_LOCAL_OLLAMA_PROFILE=true" in text
+    assert "does not call a model automatically" in text

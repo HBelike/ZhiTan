@@ -81,6 +81,8 @@ Password login remains available when email delivery fails; users who already se
 
 The core stack deliberately starts without external keys. Configure the relevant model, Firecrawl, email, observability, document, or media Provider through the documented server-side setting. Missing Provider credentials must not be placed in frontend code or committed environment files.
 
+If a configured paid or Ollama profile says `policy blocked`, confirm that the active ignored environment file contains `CAREER_ALLOW_PAID_PROFILES=true` and `CAREER_ENABLE_LOCAL_OLLAMA_PROFILE=true`, then recreate both `career-api` and `career-agent-worker`. Current Quickstart files set both values to `true`; older generated environment files are preserved during upgrades and must be updated once by their operator.
+
 ## Stop without deleting data
 
 ```bash

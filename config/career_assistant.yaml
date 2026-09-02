@@ -126,9 +126,9 @@ career_assistant:
 
   model_policy:
     default_selection_mode: free_quota_first
-    # 生产默认关闭；本地需要使用 DeepSeek 等付费档案时由环境变量显式开启。
-    allow_paid_profiles: ${CAREER_ALLOW_PAID_PROFILES:-false}
-    enable_local_ollama_profile: false
+    # 开源版默认允许操作者主动配置并选择付费或本地模型；未保存凭证的连接仍不可调用。
+    allow_paid_profiles: ${CAREER_ALLOW_PAID_PROFILES:-true}
+    enable_local_ollama_profile: ${CAREER_ENABLE_LOCAL_OLLAMA_PROFILE:-true}
     fallback_on_rate_limit: true
     fallback_on_provider_unavailable: true
 

@@ -28,11 +28,18 @@ def test_quickstart_contains_only_the_isolated_core_stack() -> None:
     assert all("name" not in volume for volume in compose["volumes"].values())
 
 
-def test_registration_policy_can_be_enabled_by_the_operator() -> None:
+def test_user_facing_policy_gates_default_to_enabled() -> None:
     compose = _load("compose.yaml")
+    environment = compose["x-career-environment"]
 
-    assert compose["x-career-environment"]["PLATFORM_PUBLIC_REGISTRATION_ENABLED"] == (
-        "${PLATFORM_PUBLIC_REGISTRATION_ENABLED:-false}"
+    assert environment["PLATFORM_PUBLIC_REGISTRATION_ENABLED"] == (
+        "${PLATFORM_PUBLIC_REGISTRATION_ENABLED:-true}"
+    )
+    assert environment["CAREER_ALLOW_PAID_PROFILES"] == (
+        "${CAREER_ALLOW_PAID_PROFILES:-true}"
+    )
+    assert environment["CAREER_ENABLE_LOCAL_OLLAMA_PROFILE"] == (
+        "${CAREER_ENABLE_LOCAL_OLLAMA_PROFILE:-true}"
     )
 
 

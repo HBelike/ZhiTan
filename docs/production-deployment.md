@@ -24,8 +24,9 @@ docker compose --env-file .env.production -f compose.yaml -f compose.production.
 3. Generate independent database, email-code, and credential-encryption Secrets.
 4. Keep `PLATFORM_AUTH_REQUIRED=true` and `PLATFORM_CLI_BOOTSTRAP_ONLY=true` on public instances.
 5. Set `RESEND_API_KEY` and `RESEND_FROM_ADDRESS` to a verified sender before enabling `PLATFORM_PUBLIC_REGISTRATION_ENABLED=true`.
-6. Configure DNS and verify Caddy TLS before sharing the URL.
-7. Define database backup, restore, host patching, monitoring, and Secret-rotation procedures.
+6. Keep `CAREER_ALLOW_PAID_PROFILES=true` and `CAREER_ENABLE_LOCAL_OLLAMA_PROFILE=true` when configured model profiles should be usable. Set either to `false` only as an intentional organization policy; enabling them never calls a model during startup.
+7. Configure DNS and verify Caddy TLS before sharing the URL.
+8. Define database backup, restore, host patching, monitoring, and Secret-rotation procedures.
 
 PostgreSQL, API, Worker, Gotenberg, and Docling must not be published directly to the internet. Caddy is the only public ingress.
 
@@ -37,7 +38,7 @@ curl --fail https://your-domain.example/api/health
 curl --fail https://your-domain.example/api/ready
 ```
 
-Do not add a password command-line argument or pipe production passwords through automation. Keep public registration disabled until email delivery and abuse controls are intentionally configured.
+Do not add a password command-line argument or pipe production passwords through automation. Public registration becomes usable only with complete email delivery configuration; set `PLATFORM_PUBLIC_REGISTRATION_ENABLED=false` when an operator intentionally wants a closed-registration deployment.
 
 If the administrator password is lost, reset it without deleting PostgreSQL or application volumes:
 

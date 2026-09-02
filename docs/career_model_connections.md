@@ -127,7 +127,7 @@ DeepSeek、腾讯云 TokenHub、腾讯混元、百度千帆、火山方舟与 Mi
 - 设计目标：DeepSeek API 模型统一按付费模型展示和路由，不能因为旧版手动连接表单的默认值而显示“【免费】”或进入免费自动选择。
 - 技术取舍：费用属性在服务端仓储边界统一规范化，而不是只在 WebUI 改字。`normalize_model_cost_tier()` 会把 DeepSeek 的新写入和旧记录读取都纠正为 `paid`；迁移 `20260825_21` 同步把 PostgreSQL 中已有的 DeepSeek 错误记录更新为 `paid`。
 - 调用链：`模型连接保存/读取 → CareerModelProfileRepository → normalize_model_cost_tier() → ModelGateway 策略检查 → WebUI 按 cost_tier 分组`。免费自动选择仍只接收 `free_quota`；付费连接显示在“已接入的付费模型”下，并使用“【付费】”前缀。
-- 权限边界：本次修正不修改 `allow_paid_profiles`。如果当前环境禁用付费模型，DeepSeek 会在“模型连接”中显示“策略已拦截”和付费属性，不会为了维持可用状态而绕过费用策略。
+- 权限边界：开源 Quickstart 默认设置 `CAREER_ALLOW_PAID_PROFILES=true`，因此操作者已配置的 DeepSeek 不会仅因付费属性被拦截；部署者仍可显式设为 `false` 实施禁止付费模型的组织策略。开启该策略不会在启动时自动调用模型。
 - 依赖与验证：没有新增运行时依赖；后端通过 `tests/test_model_profile_cost_tier.py` 覆盖分类函数、写入规范化与旧记录读取兜底。2026-08-25 本地验证结果为后端 `232 passed`、前端 `109 passed`、Vite 构建成功，Alembic head 为 `20260825_21`；未执行数据库迁移，也未连接生产环境。
 
 科大讯飞 Spark Lite 使用 WebSocket 鉴权（AppID、APIKey、APISecret），不属于当前统一的 OpenAI-compatible 调用器；在专用 Spark 客户端完成前，不会把它伪装成可用的通用模型连接。

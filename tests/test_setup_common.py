@@ -41,3 +41,13 @@ def test_port_check_reports_the_variable_name(monkeypatch) -> None:
 
     with pytest.raises(PortConflictError, match="ZHITAN_HTTP_PORT=18081"):
         assert_ports_available({"ZHITAN_HTTP_PORT": ("127.0.0.1", 18081)})
+
+
+def test_quickstart_template_enables_user_facing_policy_gates() -> None:
+    template = (Path(__file__).resolve().parents[1] / ".env.quickstart.example").read_text(
+        encoding="utf-8",
+    )
+
+    assert "PLATFORM_PUBLIC_REGISTRATION_ENABLED=true" in template
+    assert "CAREER_ALLOW_PAID_PROFILES=true" in template
+    assert "CAREER_ENABLE_LOCAL_OLLAMA_PROFILE=true" in template
