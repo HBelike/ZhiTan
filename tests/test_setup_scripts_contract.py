@@ -28,3 +28,12 @@ def test_development_scripts_use_only_the_project_virtual_environment() -> None:
     assert ".venv/bin/python" in posix
     assert "npm --prefix web-ui ci" in powershell
     assert "npm --prefix web-ui ci" in posix
+
+
+def test_admin_password_reset_is_interactive_only() -> None:
+    source = _read("scripts/bootstrap_first_admin.py")
+
+    assert '"--reset-password"' in source
+    assert "getpass.getpass" in source
+    assert "输入 RESET 确认重置管理员密码" in source
+    assert '"--password"' not in source

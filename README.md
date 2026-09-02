@@ -89,6 +89,12 @@ curl --fail http://127.0.0.1:18081/api/ready
 
 Open <http://127.0.0.1:18081>, then sign in with the administrator email shown by the bootstrap screen and the password entered in the terminal.
 
+Quickstart defaults to CLI administrator bootstrap and password login. Production-style email-code login, public registration, and password recovery appear only after `PLATFORM_PUBLIC_REGISTRATION_ENABLED=true` and a complete email Provider configuration; see [Getting started](docs/getting-started.md#enable-production-style-registration-locally). If an existing local administrator password is unavailable, reset it without deleting data:
+
+```bash
+docker compose --env-file .env.quickstart exec career-api python scripts/bootstrap_first_admin.py --reset-password
+```
+
 Only Web is published to the host:
 
 ```dotenv

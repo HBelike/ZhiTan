@@ -9,8 +9,9 @@ from __future__ import annotations
 import hashlib
 from datetime import UTC, datetime
 from typing import Protocol
+from uuid import UUID
 
-from src.platform_access.contracts import PlatformUser
+from src.platform_access.contracts import PlatformRole, PlatformUser
 from src.platform_access.security import hash_password, normalize_email
 from src.platform_access.settings import load_platform_admin_email
 
@@ -38,6 +39,9 @@ class FirstAdminRepository(Protocol):
         email_verified_at: datetime | None = None,
     ) -> PlatformUser:
         """在数据库事务中创建唯一的首个管理员。"""
+
+    def change_password_and_revoke_sessions(self, user_id: UUID, password_hash: str) -> None:
+        """更新密码摘要并撤销该账号的全部既有会话。"""
 
 
 def bootstrap_first_admin(
@@ -73,6 +77,28 @@ def bootstrap_first_admin(
     except PermissionError as exc:
         # 数据库事务中的二次检查处理并发管理员终端或其他 bootstrap 路径的竞争。
         raise FirstAdminBootstrapError("平台已由其他操作完成管理员初始化，请使用已有管理员账号登录") from exc
+
+
+def reset_configured_admin_password(
+    repository: FirstAdminRepository,
+    *,
+    email: str,
+    password: str,
+) -> PlatformUser:
+    """通过服务器交互式命令重置唯一管理员密码并撤销旧会话。"""
+
+    admin_email = load_platform_admin_email()
+    normalized_email = normalize_email(email)
+    if normalized_email != admin_email:
+        raise FirstAdminBootstrapError(f"管理员邮箱必须是 {admin_email}")
+    candidate = repository.find_user_by_email(normalized_email)
+    if candidate is None:
+        raise FirstAdminBootstrapError("管理员账号不存在，请先执行首次管理员初始化")
+    user, _ = candidate
+    if not user.is_active or user.role is not PlatformRole.ADMIN:
+        raise FirstAdminBootstrapError("配置邮箱未绑定可登录管理员账号")
+    repository.change_password_and_revoke_sessions(user.id, hash_password(password))
+    return user
 
 
 def _build_bootstrap_username(email: str) -> str:

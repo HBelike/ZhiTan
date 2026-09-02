@@ -1,8 +1,11 @@
 """通过服务器交互式终端安全创建平台的首个管理员。
 
 生产用法（不要加 ``-T``，以便密码输入不回显）：
-    docker compose --env-file .env.production -f docker-compose.production.yml \
+    docker compose --env-file .env.production -f compose.yaml -f compose.production.yaml \
       exec -it career-api python scripts/bootstrap_first_admin.py
+
+管理员密码不可用时，在相同可信终端追加 ``--reset-password``。该模式会撤销旧会话，
+同样不接受密码命令行参数。
 
 该脚本不接受密码或 API Key 命令行参数，也不会输出数据库 URL、密码或摘要；
 固定管理员邮箱可以作为操作提示显示。
@@ -24,7 +27,11 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.career_assistant.persistence.database import CareerDatabase
-from src.platform_access.bootstrap import FirstAdminBootstrapError, bootstrap_first_admin
+from src.platform_access.bootstrap import (
+    FirstAdminBootstrapError,
+    bootstrap_first_admin,
+    reset_configured_admin_password,
+)
 from src.platform_access.repository import PlatformAccessRepository
 from src.platform_access.settings import load_platform_admin_email
 
@@ -32,13 +39,20 @@ from src.platform_access.settings import load_platform_admin_email
 def main() -> int:
     """执行状态检查或受控的首次管理员创建，并返回适合运维脚本判断的退出码。"""
 
-    parser = argparse.ArgumentParser(description="通过交互式终端初始化平台首个管理员")
-    parser.add_argument(
+    parser = argparse.ArgumentParser(description="通过交互式终端初始化管理员或重置管理员密码")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument(
         "--check",
         action="store_true",
         help="只检查是否仍需初始化；不读取任何交互输入，也不创建账户",
     )
+    mode.add_argument(
+        "--reset-password",
+        action="store_true",
+        help="通过交互式终端重置唯一管理员密码，并撤销该账号的全部既有会话",
+    )
     arguments = parser.parse_args()
+    operation_label = "管理员密码重置" if arguments.reset_password else "首次管理员初始化"
 
     database_url = os.getenv("CAREER_DATABASE_URL", "").strip()
     if not database_url:
@@ -60,31 +74,49 @@ def main() -> int:
             return 0
 
         _require_interactive_terminal()
-        print(f"将创建唯一管理员 {admin_email}。密码不会显示、记录或作为命令行参数传递。")
-        email = admin_email
-        display_name = _prompt_required("管理员显示名称: ")
-        password = getpass.getpass("管理员密码（至少 8 位）: ")
-        confirmed_password = getpass.getpass("再次输入管理员密码: ")
-        if password != confirmed_password:
-            print("首次管理员初始化未执行：两次输入的密码不一致", file=sys.stderr)
-            return 2
-        confirmation = input("输入 INITIALIZE 确认创建首个管理员: ").strip()
-        if confirmation != "INITIALIZE":
-            print("首次管理员初始化已取消")
-            return 0
+        if arguments.reset_password:
+            print(f"将重置唯一管理员 {admin_email} 的密码，并撤销全部既有会话。")
+            password = getpass.getpass("新管理员密码（至少 8 位）: ")
+            confirmed_password = getpass.getpass("再次输入新管理员密码: ")
+            if password != confirmed_password:
+                print("管理员密码重置未执行：两次输入的密码不一致", file=sys.stderr)
+                return 2
+            confirmation = input("输入 RESET 确认重置管理员密码: ").strip()
+            if confirmation != "RESET":
+                print("管理员密码重置已取消")
+                return 0
+            user = reset_configured_admin_password(
+                repository,
+                email=admin_email,
+                password=password,
+            )
+            success_message = "first_admin_password_reset_ok"
+        else:
+            print(f"将创建唯一管理员 {admin_email}。密码不会显示、记录或作为命令行参数传递。")
+            display_name = _prompt_required("管理员显示名称: ")
+            password = getpass.getpass("管理员密码（至少 8 位）: ")
+            confirmed_password = getpass.getpass("再次输入管理员密码: ")
+            if password != confirmed_password:
+                print("首次管理员初始化未执行：两次输入的密码不一致", file=sys.stderr)
+                return 2
+            confirmation = input("输入 INITIALIZE 确认创建首个管理员: ").strip()
+            if confirmation != "INITIALIZE":
+                print("首次管理员初始化已取消")
+                return 0
 
-        user = bootstrap_first_admin(
-            repository,
-            email=email,
-            display_name=display_name,
-            password=password,
-        )
+            user = bootstrap_first_admin(
+                repository,
+                email=admin_email,
+                display_name=display_name,
+                password=password,
+            )
+            success_message = "first_admin_bootstrap_ok"
     except (FirstAdminBootstrapError, ValueError) as exc:
-        print(f"首次管理员初始化未执行：{exc}", file=sys.stderr)
+        print(f"{operation_label}未执行：{exc}", file=sys.stderr)
         return 2
     except SQLAlchemyError:
         # SQLAlchemy 错误可能包含连接串或驱动细节，不能透传到终端日志。
-        print("首次管理员初始化失败：无法访问平台数据库或数据库迁移尚未完成", file=sys.stderr)
+        print(f"{operation_label}失败：无法访问平台数据库或数据库迁移尚未完成", file=sys.stderr)
         return 2
     finally:
         password = ""
@@ -93,7 +125,7 @@ def main() -> int:
             database.close()
 
     # 不回显邮箱、用户名或其他可识别信息。
-    print(f"first_admin_bootstrap_ok role={user.role.value}")
+    print(f"{success_message} role={user.role.value}")
     return 0
 
 

@@ -23,8 +23,9 @@ docker compose --env-file .env.production -f compose.yaml -f compose.production.
 2. Set `ZHITAN_ENV_FILE=.env.production` and the real `APP_DOMAIN`.
 3. Generate independent database, email-code, and credential-encryption Secrets.
 4. Keep `PLATFORM_AUTH_REQUIRED=true` and `PLATFORM_CLI_BOOTSTRAP_ONLY=true` on public instances.
-5. Configure DNS and verify Caddy TLS before sharing the URL.
-6. Define database backup, restore, host patching, monitoring, and Secret-rotation procedures.
+5. Set `RESEND_API_KEY` and `RESEND_FROM_ADDRESS` to a verified sender before enabling `PLATFORM_PUBLIC_REGISTRATION_ENABLED=true`.
+6. Configure DNS and verify Caddy TLS before sharing the URL.
+7. Define database backup, restore, host patching, monitoring, and Secret-rotation procedures.
 
 PostgreSQL, API, Worker, Gotenberg, and Docling must not be published directly to the internet. Caddy is the only public ingress.
 
@@ -37,6 +38,14 @@ curl --fail https://your-domain.example/api/ready
 ```
 
 Do not add a password command-line argument or pipe production passwords through automation. Keep public registration disabled until email delivery and abuse controls are intentionally configured.
+
+If the administrator password is lost, reset it without deleting PostgreSQL or application volumes:
+
+```bash
+docker compose --env-file .env.production -f compose.yaml -f compose.production.yaml exec career-api python scripts/bootstrap_first_admin.py --reset-password
+```
+
+After enabling registration, inspect `/api/auth/bootstrap-status` and require both `public_registration_enabled` and `email_auth_enabled` to be `true` before sharing the registration URL.
 
 ## Provider validation
 

@@ -70,3 +70,12 @@ def test_readme_product_screenshots_are_repository_assets() -> None:
     assert len(references) == 7
     for reference in references:
         assert (PROJECT_ROOT / reference).is_file(), reference
+
+
+def test_auth_recovery_and_registration_configuration_are_documented() -> None:
+    text = _active_text()
+
+    assert "bootstrap_first_admin.py --reset-password" in text
+    assert "PLATFORM_PUBLIC_REGISTRATION_ENABLED=true" in text
+    assert "RESEND_API_KEY" in text
+    assert "RESEND_FROM_ADDRESS" in text

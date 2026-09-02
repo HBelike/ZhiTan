@@ -63,6 +63,38 @@ The script reads the display name and password from the terminal. It does not ac
 
 Public registration, email-code login, and password reset are hidden until a complete email Provider configuration exists. Password login works without any external Provider.
 
+If the administrator already exists but its password is unavailable, retain the data volumes and reset only that password from an interactive terminal:
+
+```bash
+docker compose --env-file .env.quickstart exec career-api python scripts/bootstrap_first_admin.py --reset-password
+```
+
+The command requires two matching password entries plus an explicit `RESET` confirmation. It revokes existing administrator sessions and never accepts the password as a command-line argument.
+
+## Enable production-style registration locally
+
+The Quickstart keeps public registration disabled by default. To reproduce the production login screen, add the following operator-owned values to `.env.quickstart`:
+
+```dotenv
+PLATFORM_PUBLIC_REGISTRATION_ENABLED=true
+RESEND_API_KEY=re_your_real_key
+RESEND_FROM_ADDRESS=ZhiTan <no-reply@your-verified-domain.example>
+```
+
+Keep the generated `PLATFORM_EMAIL_CODE_SECRET`. The from-address must use a domain verified by the email Provider. Recreate API after changing these values:
+
+```bash
+docker compose --env-file .env.quickstart up -d --force-recreate career-api
+```
+
+Confirm that the backend reports both capabilities as enabled:
+
+```bash
+curl --fail http://127.0.0.1:18081/api/auth/bootstrap-status
+```
+
+The response must contain `"public_registration_enabled":true` and `"email_auth_enabled":true`. User accounts remain local to this PostgreSQL volume; production accounts are never copied from Git.
+
 ## Stop or remove the instance
 
 Stop containers and retain all named volumes:

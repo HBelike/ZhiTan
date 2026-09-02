@@ -52,6 +52,27 @@ The second command must be interactive. Do not use `-T`, a password argument, or
 
 This is expected when Resend, a verified from-address, and `PLATFORM_EMAIL_CODE_SECRET` are not all configured. Password login and CLI administrator bootstrap remain available. The UI exposes email flows only after the backend reports a complete delivery configuration.
 
+Set these values in the active ignored environment file, then recreate API:
+
+```dotenv
+PLATFORM_PUBLIC_REGISTRATION_ENABLED=true
+RESEND_API_KEY=re_your_real_key
+RESEND_FROM_ADDRESS=ZhiTan <no-reply@your-verified-domain.example>
+```
+
+```bash
+docker compose --env-file .env.quickstart up -d --force-recreate career-api
+curl --fail http://127.0.0.1:18081/api/auth/bootstrap-status
+```
+
+If password login is visible but the password is unknown, do not delete the database. Reset the configured administrator through the interactive server command:
+
+```bash
+docker compose --env-file .env.quickstart exec career-api python scripts/bootstrap_first_admin.py --reset-password
+```
+
+Accounts are stored in the current Compose project's PostgreSQL volume. An account from another clone or production deployment will not exist locally.
+
 ## A Provider action says “not configured”
 
 The core stack deliberately starts without external keys. Configure the relevant model, Firecrawl, email, observability, document, or media Provider through the documented server-side setting. Missing Provider credentials must not be placed in frontend code or committed environment files.

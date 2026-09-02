@@ -28,6 +28,14 @@ def test_quickstart_contains_only_the_isolated_core_stack() -> None:
     assert all("name" not in volume for volume in compose["volumes"].values())
 
 
+def test_registration_policy_can_be_enabled_by_the_operator() -> None:
+    compose = _load("compose.yaml")
+
+    assert compose["x-career-environment"]["PLATFORM_PUBLIC_REGISTRATION_ENABLED"] == (
+        "${PLATFORM_PUBLIC_REGISTRATION_ENABLED:-false}"
+    )
+
+
 def test_quickstart_exposes_only_the_local_web_port() -> None:
     compose = _load("compose.yaml")
     services_with_ports = {
