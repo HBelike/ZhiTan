@@ -95,6 +95,25 @@ Quickstart defaults to CLI administrator bootstrap and password login. Productio
 docker compose --env-file .env.quickstart exec career-api python scripts/bootstrap_first_admin.py --reset-password
 ```
 
+### Choose a login path
+
+Email delivery is optional. Password login remains available without Resend: create the first administrator with the interactive bootstrap command above, or use `--reset-password` when the local password is unknown. This prevents a missing or unavailable email Provider from locking an operator out.
+
+To enable the registration screen shown in the product screenshots, configure your own Resend account:
+
+1. [Create a Resend account](https://resend.com/signup).
+2. [Add and verify a domain](https://resend.com/docs/add-a-domain); a dedicated sending subdomain is recommended.
+3. [Create an API key](https://resend.com/docs/create-an-api-key).
+4. Add these operator-owned values to the ignored `.env.quickstart` file:
+
+```dotenv
+PLATFORM_PUBLIC_REGISTRATION_ENABLED=true
+RESEND_API_KEY=re_your_own_key
+RESEND_FROM_ADDRESS=ZhiTan <no-reply@notifications.your-domain.example>
+```
+
+Keep the setup-generated `PLATFORM_EMAIL_CODE_SECRET`, then recreate `career-api` as described in [Getting started](docs/getting-started.md#enable-production-style-registration-locally). Never use a maintainer's key, publish a live key, or commit `.env.quickstart`; each deployment must use credentials owned by its operator. If delivery later stops, existing users can still use password login and the operator can reset the administrator password from the server terminal.
+
 Only Web is published to the host:
 
 ```dotenv

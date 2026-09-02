@@ -73,15 +73,22 @@ The command requires two matching password entries plus an explicit `RESET` conf
 
 ## Enable production-style registration locally
 
-The Quickstart keeps public registration disabled by default. To reproduce the production login screen, add the following operator-owned values to `.env.quickstart`:
+The Quickstart keeps public registration disabled by default. Email delivery is optional: the CLI-created administrator and password login do not require an email Provider.
+
+To reproduce the production login screen, first prepare an operator-owned Resend account:
+
+1. [Create a Resend account](https://resend.com/signup).
+2. [Add and verify a sending domain](https://resend.com/docs/add-a-domain). Using a dedicated subdomain such as `notifications.example.com` keeps sending configuration isolated.
+3. [Create an API key](https://resend.com/docs/create-an-api-key).
+4. Add the following values to the ignored `.env.quickstart` file:
 
 ```dotenv
 PLATFORM_PUBLIC_REGISTRATION_ENABLED=true
-RESEND_API_KEY=re_your_real_key
-RESEND_FROM_ADDRESS=ZhiTan <no-reply@your-verified-domain.example>
+RESEND_API_KEY=re_your_own_key
+RESEND_FROM_ADDRESS=ZhiTan <no-reply@notifications.your-domain.example>
 ```
 
-Keep the generated `PLATFORM_EMAIL_CODE_SECRET`. The from-address must use a domain verified by the email Provider. Recreate API after changing these values:
+Never use a maintainer's key or commit an active credential. Each deployment must use a key controlled by its operator. Keep the generated `PLATFORM_EMAIL_CODE_SECRET`; the from-address must use the verified domain. Recreate API after changing these values:
 
 ```bash
 docker compose --env-file .env.quickstart up -d --force-recreate career-api
@@ -94,6 +101,8 @@ curl --fail http://127.0.0.1:18081/api/auth/bootstrap-status
 ```
 
 The response must contain `"public_registration_enabled":true` and `"email_auth_enabled":true`. User accounts remain local to this PostgreSQL volume; production accounts are never copied from Git.
+
+If Resend is temporarily unavailable, existing users are not locked out. Password login remains available, and the administrator password can be reset with the interactive `bootstrap_first_admin.py --reset-password` command documented above.
 
 ## Stop or remove the instance
 

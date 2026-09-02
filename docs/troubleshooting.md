@@ -52,12 +52,14 @@ The second command must be interactive. Do not use `-T`, a password argument, or
 
 This is expected when Resend, a verified from-address, and `PLATFORM_EMAIL_CODE_SECRET` are not all configured. Password login and CLI administrator bootstrap remain available. The UI exposes email flows only after the backend reports a complete delivery configuration.
 
+Email delivery is optional. Create your own Provider configuration through the official [Resend signup](https://resend.com/signup), [domain verification](https://resend.com/docs/add-a-domain), and [API key](https://resend.com/docs/create-an-api-key) guides. Never use a maintainer's key or copy a live credential from another deployment.
+
 Set these values in the active ignored environment file, then recreate API:
 
 ```dotenv
 PLATFORM_PUBLIC_REGISTRATION_ENABLED=true
-RESEND_API_KEY=re_your_real_key
-RESEND_FROM_ADDRESS=ZhiTan <no-reply@your-verified-domain.example>
+RESEND_API_KEY=re_your_own_key
+RESEND_FROM_ADDRESS=ZhiTan <no-reply@notifications.your-domain.example>
 ```
 
 ```bash
@@ -72,6 +74,8 @@ docker compose --env-file .env.quickstart exec career-api python scripts/bootstr
 ```
 
 Accounts are stored in the current Compose project's PostgreSQL volume. An account from another clone or production deployment will not exist locally.
+
+Password login remains available when email delivery fails; users who already set a password can use it directly, while the operator retains the CLI administrator reset path above.
 
 ## A Provider action says “not configured”
 

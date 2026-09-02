@@ -15,7 +15,7 @@ This record describes the checks required before publishing a ZhiTan release. It
 
 | Check | Result |
 | --- | --- |
-| Python test suite | 656 passed; 4 deprecation warnings |
+| Python test suite | 658 passed; 4 deprecation warnings |
 | Web UI test suite | 229 passed |
 | Browser extension test suite | 34 passed |
 | Web UI production build | Passed; Vite reported the documented chunk-size warning |

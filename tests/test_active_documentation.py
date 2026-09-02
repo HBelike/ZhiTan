@@ -79,3 +79,22 @@ def test_auth_recovery_and_registration_configuration_are_documented() -> None:
     assert "PLATFORM_PUBLIC_REGISTRATION_ENABLED=true" in text
     assert "RESEND_API_KEY" in text
     assert "RESEND_FROM_ADDRESS" in text
+
+
+def test_email_onboarding_uses_official_links_and_never_a_maintainer_key() -> None:
+    text = _active_text()
+
+    assert "https://resend.com/signup" in text
+    assert "https://resend.com/docs/create-an-api-key" in text
+    assert "https://resend.com/docs/add-a-domain" in text
+    assert "re_your_own_key" in text
+    assert "never use a maintainer's key" in text.lower()
+    assert not re.search(r"\bre_[A-Za-z0-9_-]{20,}\b", text)
+
+
+def test_email_registration_docs_keep_a_provider_free_login_path() -> None:
+    text = _active_text()
+
+    assert "Email delivery is optional" in text
+    assert "Password login remains available" in text
+    assert "bootstrap_first_admin.py --reset-password" in text
