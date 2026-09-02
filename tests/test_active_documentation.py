@@ -56,3 +56,17 @@ def test_readme_links_to_each_active_guide() -> None:
 
     for path in ACTIVE_DOCUMENTS[2:]:
         assert path in readme
+
+
+def test_readme_product_screenshots_are_repository_assets() -> None:
+    readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+    references = set(
+        re.findall(
+            r'(?:src="|\]\()(docs/assets/product/[a-z0-9-]+\.png)',
+            readme,
+        )
+    )
+
+    assert len(references) == 7
+    for reference in references:
+        assert (PROJECT_ROOT / reference).is_file(), reference
